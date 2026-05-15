@@ -1,0 +1,19 @@
+# Build
+build/
+
+# Results (generated, not source)
+results/
+figures_*/
+tuning/tuning_history_*.json
+
+# ROS2 colcon
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
