@@ -1,7 +1,65 @@
 # CLAUDE.md — nmpc_controller
 
-Paper: **"Adaptive MPCC via Lie-Invariant MHE for Agile Quadrotor Flight"**
 Target: IEEE Robotics and Automation Letters (RA-L)
+
+> **⚠️ ESTADO ACTUAL (2026-06-16) — leer primero.** El proyecto PIVOTEÓ. Detalle
+> completo y vivo en la memoria: `paper-closeout-state.md` (índice en MEMORY.md).
+
+## Dónde estamos (resumen)
+
+**El MHE es un SENSOR VIRTUAL (momentum observer)**, no "identificación de masa para MPCC".
+Una sola máquina (MHE translacional 10D, acados, 100 Hz puro, grilla 10 ms, ventana 310 ms) que:
+- **Filtra** estado de odometría ruidosa (−62%)
+- **Mide la fuerza externa `d`** desde el acelerómetro IMU (residuo de momento `sf = R·a_imu = (T/m)·a + d`), validado vs ground truth de MuJoCo (`/quadrotor/external_force`): **corr 0.95–0.98** (z el más flojo = ambigüedad m–d_z, Proposición 1)
+- **Identifica** masa (real = **1.05 kg**, suma de geoms del XML MuJoCo) + τ_rc + τ_f (RLS desacoplado)
+
+**Lazo cerrado VALIDADO (keystone RA-L):** inyectar `d̂` (EMA) → NMPC como feedforward
+(`set_model_params(1.05, d_ema, 1/0.056)`, flag `ff`) → rechazo de perturbación que **escala
+con la dominancia del viento**: hover **+82%**, lento (5 m/s) **+65%**, agresivo (10 m/s) +7%.
+
+**Estructura del paper:** identificar → medir → rechazar (3 grupos de experimentos).
+
+**Decisiones clave:**
+- NO hacer el "Paso 2" (f+k_f como estados del MHE) — es refactor frágil; el diseño
+  desacoplado (MHE estado+fuerza+masa, RLS para constantes de actuador) es una CONTRIBUCIÓN.
+- Para RA-L falta (sin HW): estadística N≥5, baseline vs EKF, y **posicionar la novedad en
+  la OBSERVABILIDAD** (no en el feedforward, que es DOB de libro).
+
+## Dirección RA-L (próximo proyecto, decidido con el usuario)
+
+Lo actual (rechazo de viento) es incremental para RA-L. **El salto no-incremental es una
+CAPACIDAD nueva habilitada por el sensor virtual de wrench.** Ranking decidido:
+1. 🥇 **Tether + estimación de TENSIÓN sin sensor + maniobra agresiva (efecto látigo para pasar
+   un payload por un hueco).** Seguro (sin contacto rígido → sin crash), factible, ground truth
+   limpio (celda en la cuerda / payload con mocap), reusa TODO lo de hoy. Mejor tiro a RA-L.
+2. 🥈 Interacción física aérea (empujar pared, estimar wrench de contacto): más novel pero
+   PELIGROSO (crash al primer contacto) y hardware especial.
+3. El wrench vive en se(3)\* → **DQ (dual quaternions) tiene sentido para wrench 6D
+   (fuerza+torque)**, con propósito, no DQ por DQ. Posible paper #2 ambicioso.
+
+**Setup HW:** indoor + motion capture (posición) + perturbación controlada (ventilador
+calibrado o tether con peso). El lazo cerrado se AUTO-VALIDA (si d̂ mejora el tracking, d̂ es
+bueno) → no necesita ground truth de fuerza. Para validar d̂ directo: fuerza conocida (peso/polea).
+
+## Comandos del sensor virtual (build desde build/, source ~/mujoco_ws/install)
+
+```bash
+./nmpc_mhe_sil v2 60 w=2.0          # force-sensing (masa conocida 1.05, d limpio desde t=0)
+./nmpc_mhe_sil v2 60 w=2.0 ff       # + feedforward d̂→NMPC (rechazo)
+./nmpc_mhe_sil v2 60 w=2.0 idmass   # masa init 0.60 → demo de convergencia/identificación
+./nmpc_mhe_sil v2 60 hover [ff]     # hover (max rechazo)
+python3 ../scripts/reset_verify.py  # reset+verify robusto (gremlin de MuJoCo, rclpy/Trigger)
+python3 ../scripts/plot_paper_figures.py {filtering|force|params} <csv> [out] [title]
+```
+Escena: `MUJOCO_ODOM_NOISE=1 sim_gate_collideroff` + nodo de viento (steps/sine/random) →
+`/quadrotor/external_force` (ground truth). Figuras y CSVs en `results/` (gitignored).
+
+---
+
+## (Histórico) Paper viejo: "Adaptive MPCC via Lie-Invariant MHE"
+
+Lo de abajo es la doc del framing ANTERIOR (pre-pivote). Mucho sigue siendo infra válida
+pero el encuadre cambió al sensor virtual de arriba.
 
 ---
 

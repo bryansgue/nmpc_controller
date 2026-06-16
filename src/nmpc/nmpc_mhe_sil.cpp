@@ -132,6 +132,7 @@ int main(int argc, char** argv)
     bool slow_mode  = false;   // gentle Lissajous: moving (observable d) but low drag
     double w_override = -1.0;  // sweep: positive value overrides liss.w
     bool idmass_mode = false;  // "idmass" → start mass at 0.60 to show convergence
+    bool ff_mode = false;      // "ff" → inject estimated disturbance d̂ as NMPC feedforward
     if (argc >= 2) { mode_str = std::string(argv[1]); use_v2 = (mode_str != "v1"); }
     if (argc >= 3) t_run_arg = std::atof(argv[2]);
     for (int i = 1; i < argc; ++i) {
@@ -139,6 +140,7 @@ int main(int argc, char** argv)
         if (a == "hover") hover_mode = true;
         if (a == "slow")  slow_mode  = true;
         if (a == "idmass") idmass_mode = true;
+        if (a == "ff")     ff_mode    = true;
         if (a.rfind("w=", 0) == 0) w_override = std::atof(a.c_str() + 2);
     }
     if (w_override > 0.0) {
@@ -365,6 +367,13 @@ int main(int argc, char** argv)
             State13 x;
             x << ds.pos, ds.vel, ds.quat / (ds.quat.norm() + 1e-12), ds.omega;
             ctrl.set_x0(x);
+
+            // CLOSED-LOOP (ff mode): inject the estimated disturbance d̂ (smoothed) as
+            // NMPC feedforward → the controller predicts & cancels the external force.
+            // Mass and τ stay KNOWN (1.05, identified in the offline phase). Baseline
+            // (no ff) keeps d=0 in the controller. Same trajectory & wind → A/B compare.
+            if (ff_mode)
+                ctrl.set_model_params(M_KNOWN, d_ema, 1.0 / 0.056);
 
             ControlOutput out;
             Quat4 q_ref_prev = ds.quat;
