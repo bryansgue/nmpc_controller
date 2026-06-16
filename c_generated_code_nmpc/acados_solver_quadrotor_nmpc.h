@@ -39,7 +39,7 @@
 #define QUADROTOR_NMPC_NX     13
 #define QUADROTOR_NMPC_NZ     0
 #define QUADROTOR_NMPC_NU     4
-#define QUADROTOR_NMPC_NP     17
+#define QUADROTOR_NMPC_NP     22
 #define QUADROTOR_NMPC_NP_GLOBAL     0
 #define QUADROTOR_NMPC_NBX    0
 #define QUADROTOR_NMPC_NBX0   13
@@ -64,7 +64,7 @@
 #define QUADROTOR_NMPC_NY0    0
 #define QUADROTOR_NMPC_NY     0
 #define QUADROTOR_NMPC_NYN    0
-#define QUADROTOR_NMPC_N      100
+#define QUADROTOR_NMPC_N      31
 #define QUADROTOR_NMPC_NH     0
 #define QUADROTOR_NMPC_NHN    0
 #define QUADROTOR_NMPC_NH0    0
@@ -99,6 +99,7 @@ typedef struct quadrotor_nmpc_solver_capsule
     // dynamics
 
     external_function_external_param_casadi *expl_vde_forw;
+    external_function_external_param_casadi *expl_vde_forw_p;
     external_function_external_param_casadi *expl_ode_fun;
     external_function_external_param_casadi *expl_vde_adj;
 
@@ -172,7 +173,6 @@ ACADOS_SYMBOL_EXPORT int quadrotor_nmpc_acados_setup_qp_matrices_and_factorize(q
 ACADOS_SYMBOL_EXPORT int quadrotor_nmpc_acados_free(quadrotor_nmpc_solver_capsule * capsule);
 ACADOS_SYMBOL_EXPORT void quadrotor_nmpc_acados_print_stats(quadrotor_nmpc_solver_capsule * capsule);
 ACADOS_SYMBOL_EXPORT int quadrotor_nmpc_acados_custom_update(quadrotor_nmpc_solver_capsule* capsule, double* data, int data_len);
-
 
 ACADOS_SYMBOL_EXPORT ocp_nlp_in *quadrotor_nmpc_acados_get_nlp_in(quadrotor_nmpc_solver_capsule * capsule);
 ACADOS_SYMBOL_EXPORT ocp_nlp_out *quadrotor_nmpc_acados_get_nlp_out(quadrotor_nmpc_solver_capsule * capsule);

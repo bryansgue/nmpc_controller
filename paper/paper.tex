@@ -12,12 +12,10 @@
 \usepackage{cite}
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
 
-% ═══════════════════════ PACKAGES ═══════════════════════
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{bm}
-\usepackage{graphicx}
 \usepackage{cite}
 \usepackage{algorithmic}
 \usepackage{algorithm}
@@ -27,1389 +25,1120 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{makecell}
-%\usepackage{subcaption}  % incompatible with IEEEtran — use subfig instead
 \usepackage{siunitx}
 \usepackage{pifont}
-\usepackage{tikz}
 \usepackage{stfloats}
-\usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage{amsthm}
 \newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{lemma}{Lemma}
 \renewenvironment{proof}{\noindent\textit{Proof.}}{\hfill$\square$\medskip}
 
 % ═══════════════════════ MATH COMMANDS ═══════════════════
-\newcommand{\dq}{\hat{\bm{q}}}
-\newcommand{\dqd}{\hat{\bm{q}}_d}
-\newcommand{\dqe}{\hat{\bm{q}}_e}
-\newcommand{\se}{\mathfrak{se}(3)}
-\newcommand{\so}{\mathfrak{so}(3)}
-\newcommand{\SE}{SE(3)}
-\newcommand{\SO}{SO(3)}
-\newcommand{\Spin}{\mathrm{Spin}(3)}
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\Hd}{\mathbb{H}_d}
+\newcommand{\SOg}{SO(3)}
 \newcommand{\norm}[1]{\left\| #1 \right\|}
-\DeclareMathOperator{\Log}{Log}
-\DeclareMathOperator{\Exp}{Exp}
-\DeclareMathOperator{\Ad}{Ad}
-\DeclareMathOperator{\ad}{ad}
 \DeclareMathOperator{\atan}{atan2}
+\DeclareMathOperator{\Tr}{tr}
+\DeclareMathOperator{\Logm}{Log}
 \newcommand{\vect}[1]{\bm{#1}}
 \newcommand{\mat}[1]{\mathbf{#1}}
 \newcommand{\dt}{\Delta t}
-\newcommand{\st}{\text{s.t.}}
-
-% Checkmark / cross macros (pifont already loaded)
-\newcommand{\cmark}{\textcolor{black}{\ding{51}}}   % ✓
-\newcommand{\xmark}{\textcolor{black}{\ding{55}}}   % ✗
-
-% ════════════════════════════════════════════════════════
+\newcommand{\cmark}{\textcolor{black}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{black}{\ding{55}}}
 
 \begin{document}
 
-\title{Adaptive MPCC via Lie-Invariant MHE for Agile Quadrotor Flight}
+\title{Observability-Aware Multi-Rate Estimation\\
+of Quadrotor Mass and Actuator Dynamics}
 
-\author{Bryan~S.~Guevara,
-        Jose~Varela,
-        and~Tiago~Nascimento
-
-\thanks{Manuscript received January 14, 2025; revised March 3, 2025.}%
-\thanks{Bryan~S.~Guevara is with the Laboratório de Automação
-        e Sistemas de Robótica (LaSER), Universidade Federal da
-        Paraíba (UFPB), João Pessoa, PB 58051-900, Brazil.
-        {\tt\small bguevara@laser.ufpb.br}}%
-\thanks{Jose~Varela is with Instituto de Automática (INAUT),
-        Universidad Nacional de San Juan--CONICET, Argentina.
-        {\tt\small jvarela@inaut.unsj.edu.ar}}%
-\thanks{Tiago~Nascimento is with the Laboratório de Automação
-        e Sistemas de Robótica (LaSER), Universidade Federal da
-        Paraíba (UFPB), João Pessoa, PB 58051-900, Brazil.
-        {\tt\small tiago@laser.ufpb.br}}%
-\thanks{This work has been supported by the Ministry of Science
-        and Innovation of the Spanish Government through the
-        research project PID2021-122685OBI00 and the grant
-        PRE2019-088069.}%
-}
-
-\markboth{IEEE Robotics and Automation Letters}%
-{Guevara \MakeLowercase{\textit{et al.}}: Adaptive MPCC via Lie-Invariant MHE for Agile Quadrotor Flight}
-
-\IEEEpubid{0000--0000/00\$00.00~\copyright~2025 IEEE}
+\author{Bryan~S.~Guevara%
+\thanks{The author is with the Department of Electrical and Electronic
+Engineering, Universidad de las Fuerzas Armadas ESPE, Sangolqu\'i,
+Ecuador. E-mail: \texttt{bsguevara@espe.edu.ec}.}}
 
 \maketitle
 
+% ════════════════════ ABSTRACT ════════════════════
 \begin{abstract}
-Nonlinear Model Predictive Control (NMPC) enables agile quadrotor flight,
-yet its performance degrades when the prediction model deviates from the
-true plant---a situation that worsens above \SI{8}{m/s} as aerodynamic forces,
-mass uncertainty, and actuator lag become simultaneously significant.
-No existing approach jointly estimates mass~$m$, body-rate controller
-time constant~$\tau_{\mathrm{rc}}$, and a time-varying disturbance
-force~$\vect{d}\!\in\!\R^{3}$ online while feeding all three back
-into a running NMPC during flight.
-We propose a closed-loop architecture coupling a 21-state
-Moving Horizon Estimator~(MHE) with a Model Predictive Contouring
-Controller~(MPCC).
-The MHE employs a Lie-invariant arrival cost on~$\SO$ that is
-invariant under the quaternion double cover, eliminating
-spurious attitude jumps during hemisphere crossings.
-Its posterior covariance drives an adaptive progress
-weight~$W_s(k)\!=\!W_{s,\max}/(1\!+\!\alpha\,\sigma_k)$ that
-throttles the MPCC while estimates are uncertain and releases it
-as they converge---without manual gain scheduling.
-In software-in-the-loop experiments at \SI{10}{m/s} on a \SI{100}{m}
-Lissajous path with a deliberate 17\,\% mass error, the adaptive
-MHE--MPCC reduces position RMSE by 25.9\,\% (from \SI{0.308}{m} to
-\SI{0.228}{m}) compared with a fixed-model MPCC baseline, while both
-solvers run within a \SI{10}{ms} real-time budget at \SI{100}{Hz}.
+Model-based controllers for agile quadrotors are highly sensitive
+to three quantities that are seldom measured online: the total
+mass $m$, the inner-loop angular-rate time constant $\tau_{rc}$,
+and the thrust-actuator time constant $\tau_f$.  In practice these
+values are copied from datasheets or hand-tuned, and as a result
+the controller's dynamic model can disagree with the physical
+platform by a factor of two on $\tau_{rc}$ and by $5\!-\!20\%$ on
+$m$.  This paper proposes an \emph{observability-aware multi-rate
+estimator} that recovers $(m,\tau_{rc},\tau_f)$ online from
+in-flight signals while respecting the time scale and
+identifiability of each parameter.
+
+Four contributions:
+\emph{(i)}~a Gramian-based identifiability analysis with a proof
+of the hover singularity for the $(m,\vect d)$ pair, validated
+empirically across three flight regimes;
+\emph{(ii)}~a reduced-state $10$-D translational MHE that treats
+the measured attitude as a known input, lifting QP success from
+$<\!1\%$ to $100\%$;
+\emph{(iii)}~two decoupled RLS estimators at $100$\,Hz that
+identify $\tau_{rc}$ and $\tau_f$ on their own linear residuals;
+\emph{(iv)}~a three-regime study (hover, slow, agile) that
+quantifies the nominal-vs-real gap ($\tau_{rc}^{nom}\!=\!0.030$\,s
+versus $\hat\tau_{rc}\!\approx\!0.056$\,s, mass bias
+$\approx\!5\%$, $\hat\tau_f\!\approx\!8.4$\,ms) and demarcates
+the regime where the identification matters (commissioning,
+digital-twin calibration, INDI) from the one where the
+fast-feedback NMPC absorbs the bias.
+
+The full pipeline runs in real time inside the MuJoCo
+software-in-the-loop simulator with a per-step parameter-estimation
+cost below $4$\,ms and no QP failure across $63$\,s of agile flight.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Aerial systems: perception and autonomy,
-model predictive control,
-moving horizon estimation,
-adaptive control,
-Lie group methods.
+Quadrotor, system identification, moving-horizon estimation,
+observability, model predictive control, recursive least squares,
+acados, multi-rate estimation.
 \end{IEEEkeywords}
 
-% ══════════════════════ I. INTRODUCTION ══════════════════
+% ════════════════════ INTRODUCTION ════════════════════
 \section{Introduction}
-\label{sec:intro}
 
-Quadrotors operating at the limits of their flight envelope demand controllers
-that simultaneously handle fast nonlinear dynamics, tight trajectory constraints,
-and significant uncertainty in physical parameters.
-Nonlinear Model Predictive Control (NMPC) has become the framework of choice
-for this regime because it explicitly optimises a receding-horizon cost while
-enforcing state and input constraints~\cite{kamel2017linear,falanga2022embedded}.
-At low speeds the nominal rigid-body model is sufficiently accurate, but as
-flight speed increases beyond 8--10~m/s three categories of mismatch become
-critical: (i)~aerodynamic forces that scale with the square of velocity,
-(ii)~uncertainty in total vehicle mass $m$ due to changing payloads or
-battery state, and (iii)~the finite bandwidth of the low-level body-rate
-controller, often modelled as a first-order lag with time constant
-$\tau_\mathrm{rc}$.
-When the NMPC prediction model ignores these mismatches, planned trajectories
-diverge systematically from actual motion, degrading both tracking accuracy
-and safety margins.
+\IEEEPARstart{A}{gile} multirotors are now routinely flown at the
+limit of their actuators.  Model predictive controllers
+(MPC)~\cite{hanover2024autonomous,romero2022model,foehn2021time}
+and incremental nonlinear dynamic inversion
+(INDI)~\cite{smeur2016adaptive,sun2022comparative} reach
+double-digit speeds in racing, dynamic tracking, and aggressive
+payload-delivery benchmarks.  All these controllers, however, are
+only as good as the dynamic model that populates their internal
+predictor: mass, body inertia, rate-loop time constant, thrust
+time constant, drag coefficients and control effectiveness.  The
+values are routinely taken from the manufacturer's datasheet,
+copied across platforms, hand-tuned in flight, or simply left at
+the nominal values shipped with a simulator.  The cost of this
+practice is rarely audited.
 
-\subsection*{NMPC and MPCC for Agile UAVs}
+In this work we audit it.  Using a high-fidelity MuJoCo quadrotor
+as a ground-truth surrogate, we show that the nominal rate-loop
+time constant $\tau_{rc}^{nom}=0.030$\,s assumed by the controller
+under-predicts the actual $\hat\tau_{rc}\approx 0.056$\,s by
+nearly a factor of two, that the nominal mass under-predicts the
+real value by $\approx 5\%$, and that the thrust actuator
+behaves with a time constant $\hat\tau_f\approx 9$\,ms that is
+fully invisible to the controller at the standard $100$\,Hz rate.
+In a classical estimation paradigm this combination of biases
+would be addressed by augmenting the controller's state with
+$(m,\tau_{rc},\tau_f,\vect d)$ and running a single moving-horizon
+estimator (MHE) over the entire augmented vector.  In practice
+such monolithic full-state MHEs are fragile: they require a
+singular $\SOg$ log-map Jacobian in the arrival cost, integrate
+the quaternion over windows of $\sim$\,1\,s, and---as we document
+quantitatively---fail to solve the underlying QP on a majority of
+real-time steps even on noiseless simulated data.
 
-NMPC for multirotor vehicles was pioneered by Kamel~\textit{et al.}~\cite{kamel2017linear},
-who demonstrated that a full nonlinear formulation outperforms linearised MPC
-for aggressive trajectory tracking.
-Falanga~\textit{et al.}~\cite{falanga2022embedded} showed that NMPC can be solved onboard
-micro aerial vehicles at control frequencies above 50~Hz using tailored
-real-time iteration (RTI) schemes.
-Building on these foundations, Romero~\textit{et al.}~\cite{romero2022mpcc} introduced
-Model Predictive Contouring Control (MPCC), which recasts the tracking problem
-as a progress-maximisation problem: a virtual progress variable~$\theta$ traverses
-a reference path~$\gamma(\theta)$, and a tuneable weight~$W_s$ on the progress
-rate~$\dot\theta$ governs the speed--accuracy trade-off.
-MPCC achieves lap times competitive with world-class human pilots.
-Krinner~\textit{et al.}~\cite{krinner2024mpccpp} extend MPCC with spatial safety
-constraints and a neural-network-learned aerodynamic residual, pushing speeds
-beyond 22~m/s.
-Yet in both works~$W_s$ is set offline and remains constant throughout flight.
-Despite these advances, all NMPC and MPCC formulations to date rely on a
-\emph{fixed, nominal} model whose parameters are calibrated offline; any runtime
-deviation from the nominal plant is unaccounted for by the prediction model itself.
-Moreover, no existing MPCC formulation integrates online parameter or
-disturbance estimation of any kind.
+This paper takes a different stance.  We argue that the three
+parameters $(m,\tau_{rc},\tau_f)$ live on three distinct time
+scales and have three different observability structures, and
+that trying to estimate them with a single estimator is the
+source of the numerical fragility documented above.  Specifically:
 
-\subsection*{Online Disturbance Estimation and Adaptive Strategies}
+\begin{itemize}
+\item \emph{Mass and translational disturbance} share the
+translational equation $\dot{\vect v} = -g\vect e_3 + (f/m)\vect a + \vect d$.
+They are jointly identifiable only when the regressor
+$[f\vect a\,|\,\mat I_3]$ spans the relevant directions in
+$\R^3$, which requires non-trivial attitude/thrust excitation over
+a window long enough to average out measurement noise.
+\item \emph{The rate-loop time constant $\tau_{rc}$} appears
+linearly in the rotational equation
+$\dot{\vect\omega}=k_\tau(\vect\omega_{cmd}-\vect\omega)$ with
+$k_\tau=1/\tau_{rc}$.  Its observability is local in time and
+driven by the rate commands.  No long horizon is needed.
+\item \emph{The thrust time constant $\tau_f$} appears in the
+actuator equation $\dot f = k_f(T-f)$ with $k_f=1/\tau_f$.  Its
+observability requires reconstructing $f$ from the translational
+acceleration once $m$ is known, but its time scale is typically
+faster than the control rate.
+\end{itemize}
 
-Three complementary approaches have been proposed to close the gap between model
-and reality.
+Estimating each parameter at the rate compatible with its own
+time scale, and on its own (observable) signal, sidesteps the
+monolithic fragility and yields a numerically robust
+identification pipeline.  The resulting architecture---a $10$-D
+translational MHE running at $33$\,Hz over a $1$\,s window, plus
+two RLS estimators running at $100$\,Hz on the rotational and
+thrust residuals---is the central contribution of this paper.
 
-\textit{Adaptive inner-loop augmentation.}
-Hanover~\textit{et al.}~\cite{hanover2022performance} cascade an $\mathcal{L}_1$ adaptive controller
-around an NMPC outer loop, estimating a lumped matched disturbance $\hat{d}$
-at high bandwidth and injecting it as an additive input correction.
-The scheme achieves more than 90\% tracking error reduction under unknown payloads
-and aggressive manoeuvres up to 20~m/s.
-However, the $\mathcal{L}_1$ estimator treats the disturbance as a matched scalar input
-channel and does not separately identify physical parameters such as $m$ or
-$\tau_\mathrm{rc}$; consequently the NMPC prediction model remains inaccurate
-and trajectory optimality cannot be fully recovered.
+\subsection{Notation on the two thrusts}
+Throughout the paper we distinguish carefully between two
+thrust-related quantities.  The symbol $T$ denotes the
+\emph{commanded} collective thrust sent by the controller at
+$100$\,Hz; it is the actual control input from the perspective of
+the outer-loop NMPC.  The symbol $f$ denotes the \emph{actual}
+collective thrust delivered to the airframe by the propellers;
+it lags $T$ through the first-order actuator equation
+$\dot f = (T-f)/\tau_f$.  Critically, the translational dynamics
+in \eqref{eq:dv}~below contain $f$, not $T$.  At $100$\,Hz with
+$\tau_f\approx 9$\,ms the two are nearly equal and the controller
+may safely use $T\!\approx\!f$, but in the analysis we must keep
+them distinct.
 
-\textit{Data-driven aerodynamic models.}
-Torrente~\textit{et al.}~\cite{torrente2021data} learn an aerodynamic residual force
-$\hat{f}_\mathrm{aero}(v)$ with Gaussian Processes trained on offline flight
-data, reducing trajectory tracking error by up to 70\% at 14~m/s.
-This approach enriches the model fed to NMPC, but the GP is static after training:
-it cannot adapt to changes in $m$, to varying $\tau_\mathrm{rc}$ across platforms,
-or to time-varying disturbances such as wind gusts.
+\subsection{Related work}\label{sec:related}
+\paragraph*{MHE for quadrotors}
+The use of moving-horizon estimation for quadrotor mass and
+disturbance has been explored
+in~\cite{torrente2021data,nguyen2020model,liu2023nonlinear,kabzan2019learning}.
+The state vector is typically augmented with mass, drag
+coefficients and a translational disturbance, while the attitude
+quaternion and angular velocity remain part of the estimated
+state.  The most relevant
+works~\cite{liu2023nonlinear,kabzan2019learning} report converged
+mass estimates on simulated data but only briefly discuss the
+conditions under which the parameters are recoverable.  A common
+reported failure mode is loss of QP feasibility under window
+lengths longer than $0.5$\,s, attributed to numerical
+conditioning.  Our analysis shows that the same failure mode can
+be eliminated structurally by removing the attitude state from
+the estimator.
 
-\textit{Neural and moving-horizon estimators.}
-Wang~\textit{et al.}~\cite{wang2024neuromhe} fuse a neural network with a
-moving-horizon estimator (NeuroMHE) to estimate the full six-dimensional external
-wrench $\hat{w}\in\mathbb{R}^{6}$ and feed it back to the flight controller
-in real time, reducing force estimation error by up to 76.7\% over neural
-baselines.
-A further extension, contextual NeuroMHE~\cite{torshizi2025contextual},
-improves generalisation across varying environmental conditions.
-Choo and Kayacan~\cite{choo2023data} combine data-driven MHE with Gaussian
-Processes for agile quadrotor flight, though hardware validation above 8~m/s
-has not been reported.
-Critically, none of these estimators isolate the body-rate controller lag
-$\tau_\mathrm{rc}$, which introduces systematic phase errors at high angular-rate
-commands that cannot be absorbed by an external-force estimate.
+\paragraph*{Identifiability of quadrotor parameters}
+Identifiability of multirotor parameters has been studied in the
+classical~\cite{burri2018system} and online~\cite{wuest2019online}
+settings.  These works define persistency-of-excitation conditions
+for parameter identifiability and report empirical conditioning of
+the data matrix.  Our contribution to this line is a closed-form
+expression for the Gramian of the translational regressor and an
+explicit characterisation of the hover singularity, together with
+a direct empirical validation on agile flight.
 
-\textit{Offline low-level model identification.}
-Eschmann~\textit{et al.}~\cite{eschmann2024data} identify motor delay time constants
-and inertia parameters via Maximum A Posteriori estimation from one minute of
-flight data.
-Gupta~\textit{et al.}~\cite{gupta2025lolnmpc} embed identified low-level controller
-dynamics, including $\tau_\mathrm{rc}$, directly into the NMPC prediction model,
-achieving speeds up to 98~km/h.
-Both works perform identification \emph{offline}: $\tau_\mathrm{rc}$ is assumed
-constant and is never re-estimated once airborne.
-Fan and Copp~\cite{fan2025efficient} propose an online moving-horizon parameter
-estimator feeding back structural and thrust parameters to NMPC, but validation
-is limited to simulation.
+\paragraph*{Inner-loop time-constant identification}
+The identification of the body-rate controller's time constant
+$\tau_{rc}$ has received less attention in the MPC literature
+than mass and drag, even though MPC-based racing
+controllers~\cite{romero2022model,foehn2021time} are highly
+sensitive to its value through the inertia-equivalent body-rate
+response.  In INDI~\cite{smeur2016adaptive,sun2022comparative},
+by contrast, correct $\tau_{rc}$ identification is the bottleneck
+of stability, since the controller inverts the rotational
+dynamics directly.  Our RLS-based identification of $\tau_{rc}$
+thus also addresses an open problem for INDI-style controllers.
 
-\subsection*{Identified Gap}
+\paragraph*{Thrust dynamics}
+Thrust actuator dynamics are commonly modelled as a first-order
+lag~\cite{bauersfeld2021neurobem} with a time constant in the
+$5\!-\!20$\,ms range.  The standard practice is either to ignore
+this lag or to apply a fixed feedforward compensation.  We
+identify $\tau_f$ online with the second RLS and characterise
+the regime in which the feedforward becomes useful (effectively
+only when the controller's bandwidth approaches the actuator's).
+
+\subsection{Identified gap and contributions}
+The literature lacks an explicit observability analysis that
+\emph{predicts} when joint mass/disturbance recovery succeeds,
+and monolithic full-state MHEs are numerically fragile because
+they couple parameters of incompatible time scales in a single
+QP.  This paper makes four contributions:
+
+\begin{enumerate}
+\item A closed-form Gramian-based identifiability analysis with
+a proof of the hover singularity (Section~\ref{sec:obs}).
+\item A reduced-state $10$-D translational MHE that treats the
+measured attitude as a known input, lifting QP success from
+$<\!1\%$ to $100\%$ (Section~\ref{sec:mhe-t}).
+\item Two decoupled RLS estimators at $100$\,Hz for $\tau_{rc}$
+and $\tau_f$ on their own linear residuals (Section~\ref{sec:rls}).
+\item A three-regime empirical study (hover, slow, agile) that
+validates the analysis and quantifies the gap between nominal
+and identified parameters under a $100$\,Hz NMPC
+(Sections~\ref{sec:results}--\ref{sec:discussion}).
+\end{enumerate}
+
+The rest of the paper is organised as follows.
+Section~\ref{sec:model} introduces the system model and notation.
+Section~\ref{sec:obs} develops the identifiability analysis.
+Sections~\ref{sec:mhe-t} and~\ref{sec:rls} present the MHE and the
+two RLS estimators.  Section~\ref{sec:setup} describes the
+simulator setup and Section~\ref{sec:results} reports the
+experimental results.  Section~\ref{sec:discussion} discusses the
+findings and their generalisation to hardware and to INDI.
+Section~\ref{sec:conclusion} concludes.
+
+% ════════════════════ MODEL ════════════════════
+\section{System Model and Notation}\label{sec:model}
+
+\subsection{Notation}
+We use the following symbols throughout:
+\begin{itemize}
+\item $\vect p,\vect v\in\R^3$: position and linear velocity in
+the world frame;
+\item $\vect q\in\R^4$ with $\vect q^\top\vect q=1$: the
+body-to-world unit quaternion, with rotation matrix
+$\vect R(\vect q)\in\SOg$;
+\item $\vect\omega\in\R^3$: body-frame angular velocity;
+\item $T\in\R_{\ge0}$: \emph{commanded} collective thrust [N],
+sent by the controller at $100$\,Hz;
+\item $f\in\R_{\ge0}$: \emph{actual} collective thrust delivered
+by the propellers [N], with $\dot f = (T-f)/\tau_f$;
+\item $\vect\omega_{cmd}\in\R^3$: the body-rate command sent by
+the controller to the inner-loop rate tracker;
+\item $\vect e_3 = [0,0,1]^\top$, $g=9.81$\,m/s$^2$;
+\item $\vect a(t)=\vect R(\vect q(t))\,\vect e_3\in\R^3$: the
+unit-norm thrust direction in the world frame.
+\end{itemize}
+Table~\ref{tab:notation} summarises the model parameters; the
+\emph{Estimated by} column anticipates the architecture of
+Sections~\ref{sec:mhe-t}--\ref{sec:rls}.
 
 \begin{table}[t]
 \centering
-\caption{%
-  Estimation-aware control for agile quadrotors.
-  $\hat{m}$\,/\,$\hat{\tau}$ = mass\,/\,body-rate lag estimated online
-  (\cmark~online, off = offline, \xmark~no);
-  CL = closed-loop correction of prediction model;
-  Adp = aggressiveness modulated by estimation confidence.}
-\label{tab:comparison}
-\setlength{\tabcolsep}{2pt}
-\renewcommand{\arraystretch}{1.15}
-\footnotesize
-\begin{tabular}{@{}lccccccc@{}}
+\caption{Model parameters and their physical meaning.}
+\label{tab:notation}
+\begin{tabular}{lll}
 \toprule
-\textbf{Work}
-  & \textbf{Ctrl}
-  & \textbf{$\hat{m}$}
-  & \textbf{$\hat{\tau}$}
-  & \textbf{Dist.}
-  & \textbf{CL}
-  & \textbf{Adp}
-  & \textbf{\makecell{$v$\\{[m/s]}}} \\
+Symbol & Meaning & Estimated by \\
 \midrule
-\cite{kamel2017linear} Kamel
-  & NMPC & \xmark & \xmark & --- & \xmark & \xmark & $<$5 \\
-\cite{torrente2021data} Torrente
-  & NMPC & \xmark & \xmark & GP$^\dagger$ & $\sim$ & \xmark & 14 \\
-\cite{romero2022mpcc} Romero
-  & MPCC & \xmark & \xmark & --- & \xmark & \xmark & 16 \\
-\cite{krinner2024mpccpp} Krinner
-  & MPCC & \xmark & \xmark & NN$^\dagger$ & $\sim$ & \xmark & $>$22 \\
-\cite{hanover2022performance} Hanover
-  & NMPC & \xmark & \xmark & $\mathcal{L}_1$ & \xmark & \xmark & 20 \\
-\cite{wang2024neuromhe} Wang
-  & Geom. & \xmark & \xmark & wrench & $\sim$ & \xmark & $<$5 \\
-\cite{eschmann2024data} Eschmann
-  & NMPC & $\sim$ & off & --- & \xmark & \xmark & $<$5 \\
-\cite{gupta2025lolnmpc} Gupta
-  & NMPC & \xmark & off & --- & \xmark & \xmark & 27 \\
-\cite{fan2025efficient} Fan
-  & NMPC & $\sim$ & \xmark & --- & \cmark & \xmark & $<$5$^*$ \\
-\cite{zhang2025dual} Zhang
-  & NMPC & \xmark & \xmark & MRAC & $\sim$ & \xmark & $<$5 \\
-\midrule
-\textbf{Ours}
-  & \textbf{MPCC} & \cmark & \cmark & \textbf{MHE}
-  & \cmark & \cmark & 10 \\
+$m$                  & vehicle mass [kg]                        & Translational MHE \\
+$\vect d$            & translational disturbance acc.\ [m/s$^2$]& Translational MHE \\
+$\tau_{rc}$          & rate-loop time constant [s]              & RLS-rate \\
+$k_\tau=1/\tau_{rc}$ & rate-loop gain [1/s]                     & RLS-rate \\
+$\tau_f$             & thrust time constant [s]                 & RLS-thrust \\
+$k_f=1/\tau_f$       & thrust gain [1/s]                        & RLS-thrust \\
 \bottomrule
 \end{tabular}
-
-\vspace{2pt}
-{\scriptsize $^\dagger$Offline learned.\quad $^*$Simulation only.\quad
-Dist.\ column: estimation method for translational disturbance;
-all disturbances in acceleration [m/s$^2$] except Wang (wrench [N,\,Nm]).}
 \end{table}
 
-As Table~\ref{tab:comparison} summarises, each existing approach addresses
-only a subset of the three mismatch sources described above.
-Fan and Copp~\cite{fan2025efficient} estimate structural parameters online
-via moving-horizon estimation in closed loop with NMPC, but exclude
-actuator dynamics and external disturbances, and validate in simulation only.
-NeuroMHE~\cite{wang2024neuromhe} estimates the full external wrench online,
-yet does not isolate mass or body-rate lag as separate quantities and operates
-with a geometric controller at low speeds, not with a predictive controller.
-$\mathcal{L}_1$-augmented NMPC~\cite{hanover2022performance} rejects
-disturbances at high bandwidth but treats them as a lumped scalar signal,
-leaving the prediction model itself uncorrected.
-Zhang~\textit{et al.}~\cite{zhang2025dual} cascade dual MRAC channels onto
-NMPC to handle payload changes and impacts, but the adaptation is lumped and
-does not decompose into separate mass, actuator, and disturbance estimates.
-Offline identification~\cite{eschmann2024data,gupta2025lolnmpc} captures
-the body-rate lag accurately but cannot track its variation in flight.
-Furthermore, all existing MPCC formulations~\cite{romero2022mpcc,krinner2024mpccpp}
-use a fixed progress weight tuned offline; the speed--accuracy trade-off
-is never adapted to the current estimation confidence.
-To the best of our knowledge, the joint online estimation of mass, actuator
-lag, and translational disturbance acceleration --- combined with
-closed-loop injection into MPCC and confidence-driven progress modulation
---- has not been addressed in the literature.
+\subsection{Continuous-time dynamics}
+The continuous-time quadrotor model used throughout the paper is
+\begin{align}
+\dot{\vect p} &= \vect v, \label{eq:dp}\\
+\dot{\vect v} &= -g\,\vect e_3 + \frac{f}{m}\,\vect a(\vect q) + \vect d, \label{eq:dv}\\
+\dot{\vect q} &= \tfrac{1}{2}\,\vect q \otimes [\,0,\;\vect\omega\,], \label{eq:dq}\\
+\dot{\vect\omega} &= k_\tau(\vect\omega_{cmd}-\vect\omega), \label{eq:dw}\\
+\dot{f} &= k_f\,(T - f), \label{eq:df}
+\end{align}
+where $\otimes$ denotes the Hamilton quaternion product.  The
+control inputs to the physical platform are $(T,\vect\omega_{cmd})$.
 
-\subsection*{Contributions}
+\paragraph*{Two thrusts, two roles}
+Equation~\eqref{eq:dv} contains the \emph{actual} thrust $f$,
+whereas \eqref{eq:df} couples $f$ to the \emph{commanded} thrust
+$T$ through the first-order lag with constant $\tau_f$.  The
+controller sets $T$ at $100$\,Hz; the platform delivers $f$ with
+bandwidth $1/\tau_f$.  For $\tau_f\ll \dt$, $f\approx T$ and the
+lag is invisible to the controller.  We will see in
+Section~\ref{sec:results} that this is precisely the regime of
+the present MuJoCo platform.
 
+\paragraph*{Rate loop as a first-order lag}
+Equation~\eqref{eq:dw} models the inner-loop rate tracker as a
+first-order system from $\vect\omega_{cmd}$ to $\vect\omega$,
+with constant $\tau_{rc}=1/k_\tau$.  This is a standard reduction
+of a high-bandwidth attitude controller and is consistent with
+the formulation used by the MPC racing
+literature~\cite{romero2022model,foehn2021time}.
+
+\subsection{Parameter vector}
+The parameter vector estimated in this paper is
+\[
+\vect\theta = (m,\,\tau_{rc},\,\tau_f)\in\R^3.
+\]
+The translational disturbance $\vect d\in\R^3$ is included as an
+additional MHE state when offset-free behaviour is required.  We
+will see that, on the platform used, $\vect d$ creates an
+ambiguity with $m$ that biases mass estimation; we will therefore
+also study a \emph{mass-only} configuration in which $\vect d$
+is fixed at zero.
+
+\subsection{Discrete-time form and measurements}
+For implementation, \eqref{eq:dp}--\eqref{eq:df} are discretised
+with an explicit fourth-order Runge--Kutta integrator at step
+$\dt=0.01$\,s.  We assume that an on-board state estimator
+(e.g., visual--inertial or motion-capture) provides
+$(\vect p,\vect v,\vect q,\vect\omega)$ at $100$\,Hz with
+Gaussian noise.  The controller publishes $(T,\vect\omega_{cmd})$
+at the same rate.  All these signals are available to the
+parameter estimator.
+
+% ════════════════════ IDENTIFIABILITY ════════════════════
+\section{Identifiability of the Translational Parameters}\label{sec:obs}
+
+We study the identifiability of $(m,\vect d)$ from the
+translational equation~\eqref{eq:dv} when the thrust $f(t)$ and
+the thrust direction $\vect a(t)$ are treated as known inputs and
+the linear velocity $\vect v(t)$ is measured.  The rotational and
+thrust parameters $(\tau_{rc},\tau_f)$ are handled separately and
+are structurally decoupled (Lemma~\ref{lem:decoup}).
+
+\subsection{Linear regressor}
+Defining the inverse-mass--disturbance parameter vector
+\begin{equation}
+\vect\theta_T \;=\; [\,1/m,\;d_x,\;d_y,\;d_z\,]^\top \in \R^4,
+\end{equation}
+equation~\eqref{eq:dv} can be rearranged into the linear
+regressor form
+\begin{equation}
+\dot{\vect v}(t) + g\,\vect e_3 \;=\; \Phi(t)\,\vect\theta_T,
+\quad
+\Phi(t) \;=\;\big[\,f(t)\,\vect a(t)\;\big|\;\mat I_3\,\big] \in \R^{3\times 4}.
+\label{eq:regressor}
+\end{equation}
+The first column of $\Phi(t)$ contains the time-varying input
+$f(t)\vect a(t)\in\R^3$, while the last three columns form the
+identity.  We work over a sliding window $[t-T,t]$ of length $T$
+and define the cumulative \emph{identification Gramian}
+\begin{equation}
+\mat G(t,T) \;=\; \frac{1}{T}\int_{t-T}^{t}\!\!\Phi(\tau)^\top\Phi(\tau)\,d\tau \;\in\;\R^{4\times 4}.
+\label{eq:gramian}
+\end{equation}
+
+\begin{lemma}[Identifiability]\label{lem:idf}
+If $\mat G(t,T)\succ 0$ (i.e., positive definite) and the
+measurement noise has bounded variance, then the unweighted
+least-squares estimate
+\[
+\hat{\vect\theta}_T = \mat G(t,T)^{-1}\,\frac{1}{T}\int_{t-T}^{t}\!\!\Phi(\tau)^\top[\dot{\vect v}(\tau)+g\vect e_3]\,d\tau
+\]
+is consistent with covariance proportional to $\mat G^{-1}$.  If
+$\mat G$ is rank deficient, then $\vect\theta_T$ is recoverable
+only up to its null space.
+\end{lemma}
+\noindent The proof is the standard least-squares argument and is
+omitted.
+
+\subsection{Hover singularity}
+\begin{proposition}[Hover singularity]\label{prop:hover}
+At level hover, $\vect a(t)\equiv\vect e_3$ and
+$f(t)\equiv mg$.  Then for any $T>0$,
+\[
+\mathrm{rank}\,\mat G(t,T) \;\le\; 3,
+\]
+with the one-dimensional null space spanned by
+$[\,mg,\,0,\,0,\,-1\,]^\top$.  Equivalently, $1/m$ and $d_z$ are
+not separable at hover; any estimator can recover only the linear
+combination $g/m - d_z$.
+\end{proposition}
+\begin{proof}
+At level hover the first column of $\Phi(t)$ is
+$f(t)\vect a(t)=mg\,\vect e_3$, which is collinear with the
+fourth column $\vect e_3$ of $\mat I_3$.  Therefore
+$\Phi(t)\,[mg,0,0,-1]^\top \equiv \vect 0$, which proves the null
+space.  The rank deficiency follows from the rank--nullity
+theorem.
+\end{proof}
+
+\noindent Proposition~\ref{prop:hover} states that the parameters
+$m$ and $d_z$ are \emph{structurally} non-identifiable at level
+hover.  No algorithm can resolve them from translational
+measurements alone; the only way to break the ambiguity is to
+introduce thrust-direction variation, that is, attitude tilt.
+
+\subsection{Persistency of excitation under agile flight}
+\begin{proposition}[Persistency of excitation]\label{prop:pe}
+Let the thrust direction $\vect a(t)$ and the thrust magnitude
+$f(t)$ satisfy
+\begin{equation}
+\frac{1}{T}\!\int_{t-T}^{t}\!\big[f(\tau)\vect a(\tau)-\bar c\big]\!\big[f(\tau)\vect a(\tau)-\bar c\big]^{\!\top} d\tau \,\succeq\, \alpha\,\mat I_3,
+\label{eq:pe-cond}
+\end{equation}
+for some $\bar c\in\R^3$ and some $\alpha>0$.  Then
+$\mat G(t,T)\succeq \beta\,\mat I_4$ for some $\beta>0$, hence
+$\vect\theta_T$ is identifiable on the window.
+\end{proposition}
+\begin{proof}
+Condition~\eqref{eq:pe-cond} is a non-degeneracy condition on
+the time-average of the rank-one outer product of the first
+column of $\Phi$ relative to its mean $\bar c$.  Combined with
+the identity
+$\frac{1}{T}\int\mat I_3^\top\mat I_3\,d\tau=\mat I_3$ for the
+remaining columns, it implies that no non-zero linear
+combination of the columns of $\Phi$ averages to zero, and
+consequently that $\mat G$ has empty null space.  The bound
+$\beta>0$ follows from the Schur complement and the bounded
+smallest singular value of $\Phi$ over the window.
+\end{proof}
+
+\noindent Geometrically, \eqref{eq:pe-cond} requires the
+trajectory of $\vect a(t)$ to span the relevant directions in
+$\R^3$.  Hover keeps $\vect a$ fixed at $\vect e_3$ and violates
+the condition; agile flight, by contrast, induces strong
+attitude tilt and thereby spans the unit sphere over the window.
+
+\subsection{Empirical conditioning}
+We compute the empirical condition number $\kappa(\mat G(t,T))$
+on the actual MuJoCo flight data for three regimes: synthetic
+hover, a slow Lissajous ($v_{peak}\!\approx\!3$\,m/s) and an
+agile Lissajous ($v_{peak}\!\approx\!12$\,m/s), each over a
+$T=1$\,s window.  Results are reported in
+Table~\ref{tab:gramian}.  The hover regime is numerically
+singular, matching Proposition~\ref{prop:hover}.  The slow
+regime is identifiable but stiff.  The agile regime is well
+conditioned and is the operating point of the MHE in the rest of
+the paper.
+
+\begin{table}[t]
+\centering
+\caption{Empirical Gramian condition number $\kappa(\mat G)$ on
+a $1$\,s window for three regimes.}
+\label{tab:gramian}
+\begin{tabular}{lc}
+\toprule
+Regime & $\kappa(\mat G)$ \\
+\midrule
+Synthetic hover ($\vect a=\vect e_3,\,f=mg$) & $3.2\times10^{16}$ \\
+Slow Lissajous ($v_{peak}\!\approx\!3$\,m/s) & $7.6\times10^{2}$ \\
+Agile Lissajous ($v_{peak}\!\approx\!12$\,m/s) & $4.3\times10^{2}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Decoupling of the actuator parameters}
+\begin{lemma}[Structural decoupling]\label{lem:decoup}
+The actuator parameters $k_\tau$ and $k_f$ are observable from
+signals that are not used by the translational
+regressor~\eqref{eq:regressor}.  Specifically, $k_\tau$ is
+identifiable from $(\vect\omega,\vect\omega_{cmd})$ alone, and
+$k_f$ is identifiable from $(T,f)$ once $f$ is reconstructed from
+$(m,\dot{\vect v},\vect a)$.
+\end{lemma}
+\noindent This decoupling is what justifies the multi-rate
+architecture proposed in Sections~\ref{sec:mhe-t}--\ref{sec:rls}:
+the same data can be processed by three estimators in parallel,
+each one looking at the equation in which its parameter is
+identifiable.
+
+\subsection{Implications for the architecture}
+Three lessons emerge from the analysis:
 \begin{enumerate}
-    \item An MHE that jointly estimates mass, body-rate lag, and
-          translational disturbance acceleration online at 100~Hz,
-          using a Lie-invariant arrival cost on the quaternion manifold.
-
-    \item Closed-loop injection of the MHE estimates into the MPCC
-          prediction model, correcting mass, actuator dynamics, and
-          disturbance at every control step.
-
-    \item An adaptive progress weight driven by the MHE posterior
-          covariance, which automatically limits path speed when
-          estimates are uncertain and releases it as they converge.
-
-    \item Validation in software-in-the-loop simulation under
-          mass mismatch, constant wind, and gust disturbances,
-          complemented by hardware experiments on a physical
-          quadrotor.
+\item \emph{Attitude is measured, not estimated.}  The thrust
+direction $\vect a(t)$ enters \eqref{eq:regressor} as an
+\emph{input}.  Estimating $\vect q$ as a state in the MHE adds
+the nonlinearity that the Gramian analysis side-steps.
+\item \emph{Excitation is regime-dependent.}  No estimator can
+identify $m$ at hover; the controller must, by design, provide
+enough excitation for identification to succeed.  Section
+\ref{sec:results} shows that the agile Lissajous trajectory used
+here is sufficient.
+\item \emph{Multi-rate decoupling is natural.}
+Lemma~\ref{lem:decoup} shows that the three parameters live on
+three independent equations; the architecture of
+Sections~\ref{sec:mhe-t}--\ref{sec:rls} simply respects this
+structure.
 \end{enumerate}
 
-The remainder of this paper is organised as follows.
-Section~\ref{sec:model} introduces the quadrotor dynamics and path
-parameterisation.
-Sections~\ref{sec:mhe} and~\ref{sec:mpcc} formulate the MHE and the
-adaptive MPCC, respectively.
-Section~\ref{sec:architecture} describes the closed-loop integration.
-Section~\ref{sec:results} presents SiL and hardware experiments, and
-Section~\ref{sec:conclusion} concludes.
+% ════════════════════ MHE ════════════════════
+\section{Translational Moving-Horizon Estimator}\label{sec:mhe-t}
 
-% ══════════════════════ II. SYSTEM MODEL ═════════════════
-\section{System Model}
-\label{sec:model}
-
-\subsection{Notation}
-\label{sec:notation}
-
-Vectors are set in bold italic $\vect{a}$, matrices in bold upright
-$\mat{A}$.
-The inertial frame is $\mathcal{I}$ and the body frame is
-$\mathcal{B}$.
-We write $[\vect{a}]_\times\in\R^{3\times3}$ for the skew-symmetric
-matrix such that $[\vect{a}]_\times\vect{b}=\vect{a}\times\vect{b}$.
-The Hamilton quaternion product is denoted $\otimes$ and is defined so
-that $\vect{q}_1\otimes\vect{q}_2$ corresponds to the rotation
-$\mat{R}(\vect{q}_1)\mat{R}(\vect{q}_2)$ (composition order).
-Unit quaternions are written
-$\vect{q}=[q_w,\,\vect{q}_v^\top]^\top\in\mathcal{S}^3\subset\R^4$
-with $\norm{\vect{q}}=1$.
-The weighted squared norm is
-$\norm{\vect{a}}^2_{\mat{W}} \triangleq \vect{a}^\top\mat{W}\,\vect{a}$.
-
-\subsection{Quadrotor Physical Dynamics}
-
-The physical state is
+\subsection{State and dynamics}
+Following Lemma~\ref{lem:idf} and Proposition~\ref{prop:pe} we
+define the reduced augmented state
 \begin{equation}
-  \vect{x}_{\mathrm{phy}}
-  = \bigl[\vect{p}^\top,\,\vect{v}^\top,\,\vect{q}^\top,\,
-          \vect{\omega}^\top\bigr]^\top
-  \in \R^3\!\times\!\R^3\!\times\!\mathcal{S}^3\!\times\!\R^3,
-  \label{eq:state_phy}
+\vect x_T \;=\; [\,\vect p^\top,\;\vect v^\top,\;m,\;\vect d^\top\,]^\top \in \R^{10},
 \end{equation}
-where $\vect{p}\in\R^3$ is position in $\mathcal{I}$,
-$\vect{v}\in\R^3$ is inertial-frame velocity,
-$\vect{q}=[q_w,\vect{q}_v^\top]^\top\in\mathcal{S}^3$ is the unit
-quaternion mapping $\mathcal{B}\!\to\!\mathcal{I}$, and
-$\vect{\omega}\in\R^3$ is the angular velocity in $\mathcal{B}$.
-The continuous-time dynamics are
-\begin{subequations}\label{eq:dynamics}
+which does \emph{not} contain the attitude quaternion or the body
+rates.  The dynamics, with measured inputs $(f,\vect a)$, are
 \begin{align}
-  \dot{\vect{p}} &= \vect{v}, \label{eq:dp}\\
-  \dot{\vect{v}} &= -g\,\vect{e}_3
-                    + \frac{f}{m}\,\mat{R}(\vect{q})\,\vect{e}_3
-                    + \vect{d}, \label{eq:dv}\\
-  \dot{\vect{q}} &= \tfrac{1}{2}\,\vect{q}\otimes
-                    [0,\;\vect{\omega}^\top]^\top, \label{eq:dq}\\
-  \dot{\vect{\omega}} &= \frac{\vect{\omega}_c - \vect{\omega}}
-                              {\tau_{\mathrm{rc}}},
-                    \label{eq:domega}
+\dot{\vect p} &= \vect v, \\
+\dot{\vect v} &= -g\vect e_3 + (f/m)\,\vect a + \vect d, \label{eq:dv-t}\\
+\dot m &= w_m, \quad \dot{\vect d} = \vect w_d, \label{eq:rw}
 \end{align}
-\end{subequations}
-where $g=\SI{9.81}{m/s^2}$, $\vect{e}_3=[0,0,1]^\top$, $m$ is the
-vehicle mass, $\vect{\omega}_c\in\R^3$ is the body-rate command,
-and $\tau_{\mathrm{rc}}>0$ is the first-order time constant of the
-low-level rate controller~\cite{gupta2025lolnmpc,eschmann2024data}.
-In~\eqref{eq:dv}, $f$ denotes the \emph{thrust state} (not a control
-input, see Section~\ref{sec:mpcc_state}), and
-$\vect{d}\in\R^3$ is an acceleration disturbance
-($\si{m/s^2}$, inertial frame) capturing aerodynamic drag,
-payload shifts, and wind.
+where $w_m$ and $\vect w_d$ are random-walk process-noise inputs
+that allow the parameters to vary slowly with time.  The thrust
+direction $\vect a$ enters \eqref{eq:dv-t} as a known time-varying
+input, sourced directly from the on-board attitude estimator.
 
-\noindent\textit{Implementation note.}
-In the real-time OCP, equation~\eqref{eq:domega} is equivalently
-written as
-$\dot{\vect{\omega}} = k_\tau\,(\vect{\omega}_c - \vect{\omega})$
-with the \emph{rate gain} $k_\tau \triangleq 1/\tau_{\mathrm{rc}}$
-treated as a runtime parameter.
-This reparameterisation makes the dynamics \emph{linear} in the
-estimated parameter, avoiding the $\mathcal{O}(1/\tau_{\mathrm{rc}}^2)$
-Jacobian entries that arise from differentiating $1/\tau_{\mathrm{rc}}$
-directly, which would otherwise ill-condition the HPIPM QP solver.
-The rotation matrix is
+\subsection{Measurement model}
+The translational MHE consumes only the translational measurements
 \begin{equation}
-  \mat{R}(\vect{q}) = (2q_w^2-1)\,\mat{I}_3
-    + 2q_w[\vect{q}_v]_\times + 2\,\vect{q}_v\vect{q}_v^\top,
-  \label{eq:R_from_q}
+\vect y_k \;=\; [\vect p_k,\,\vect v_k] \;\in\;\R^6.
 \end{equation}
-which implements the \emph{active} body-to-inertial rotation under
-the Hamilton convention.
+The measurement covariance is diagonal,
+\[
+\mat R^{-1} \;=\; \mathrm{diag}(R_p\mat I_3,\;R_{Vxy},\;R_{Vxy},\;R_{Vz}),
+\]
+with $R_{Vz}\gg R_{Vxy}$.  This anisotropy reflects the analysis:
+the vertical residual carries most of the information about $m$
+in the near-level regime, while the horizontal residuals are
+contaminated by unmodelled effects (lateral drag, motor coupling)
+that we prefer to absorb rather than push into the parameter.
 
-\subsection{Path Parameterisation}
-\label{sec:path}
-
-A 3-D Lissajous figure is parameterised in arc-length $\theta$
-via offline B-spline fitting to $N_{\mathrm{wp}}=400$ waypoints
-sampled from the time-parametric trajectory
-at $s_{\max}=\SI{100}{m}$~\cite{romero2022mpcc}.
-The B-spline map
+\subsection{Arrival cost}
+A standard MHE drift-prevention term penalises departures of the
+initial state of the window from a prior $\bar{\vect x}_T$ with
+covariance $\mat P$:
 \begin{equation}
-  \gamma(\theta)
-  = \bigl[\vect{p}_d(\theta),\;\vect{q}_d(\theta),\;
-          \hat{\vect{\omega}}(\theta)\bigr]
-  \label{eq:bspline}
+J_{\text{prior}}(\vect x_{T,0}) \;=\; \|\vect x_{T,0}-\bar{\vect x}_T\|_{\mat P^{-1}}^2.
 \end{equation}
-yields: path position $\vect{p}_d\in\R^3$, attitude reference
-$\vect{q}_d\in\mathcal{S}^3$ (from differential flatness~\cite{falanga2022embedded},
-max tilt \SI{60}{\degree}), and the unit tangent
-$\vect{\tau}(\theta)=\partial\vect{p}_d/\partial\theta/
-\norm{\partial\vect{p}_d/\partial\theta}$.
-A feedforward thrust could be derived from the path via differential
-flatness, but is unnecessary here because thrust is a state governed
-by the rate input $\Delta f$.
-The angular-velocity sensitivity
-$\hat{\vect{\omega}}(\theta)\in\R^3$ is the body-frame angular rate
-per unit arc-length,
-$\hat{\vect{\omega}} = 2\bigl(\vect{q}_d^*\otimes
-\mathrm{d}\vect{q}_d/\mathrm{d}\theta\bigr)\!\big|_{\mathrm{vec}}$.
-The angular-velocity feedforward then scales with progress speed:
-\begin{equation}
-  \vect{\omega}_d(\theta,v_\theta) = \hat{\vect{\omega}}(\theta)\,v_\theta.
-  \label{eq:omega_ff}
-\end{equation}
+The prior is propagated each step by the one-step covariance
+update of an extended Kalman filter.  We enforce
+$\mat P\succeq 10^{-3}\mat I$ on the parameter block to prevent
+the prior from becoming numerically singular, which empirically
+removes a category of QP failures we encountered with default
+acados settings.
 
-% ══════════════════════ III. LIE-INVARIANT MHE ═══════════
-\section{Lie-Invariant Moving Horizon Estimator}
-\label{sec:mhe}
-
-\subsection{Augmented State for Online Estimation}
-
-The uncertain parameters $m$, $\tau_{\mathrm{rc}}$, and $\vect{d}$
-are treated as slowly varying states.
-Together with the physical state~\eqref{eq:state_phy} and the MPCC
-virtual states $(\theta,v_\theta,f)$ introduced in
-Section~\ref{sec:mpcc_state}, the MHE augmented state is
-\begin{equation}
-  \vect{x}_a = \bigl[\vect{x}_{\mathrm{phy}}^\top,\,
-                \theta,\,v_\theta,\,f,\,
-                m,\, \tau_{\mathrm{rc}},\,
-                \vect{d}^\top\bigr]^\top \in \R^{21},
-  \label{eq:augmented_state}
-\end{equation}
-with random-walk drift dynamics
-\begin{equation}
-  \dot{m} = w_m,\quad
-  \dot{\tau}_{\mathrm{rc}} = w_\tau,\quad
-  \dot{\vect{d}} = \vect{w}_d,
-  \label{eq:param_dynamics}
-\end{equation}
-where $\vect{w}_a=[w_m,\,w_\tau,\,\vect{w}_d^\top]^\top\in\R^5\sim
-\mathcal{N}(\vect{0},\mat{Q}_w)$.
-
-\subsection{Measurement Model}
-
-The odometry system provides $\vect{x}_{\mathrm{phy}}$ at discrete
-times $t_k=k\dt$.
-Because the quaternion lives on $\mathcal{S}^3$, the measurement
-function is \emph{nonlinear}:
-\begin{equation}
-  \vect{y}_k = h\!\bigl(\vect{x}_{a,k}\bigr) + \vect{n}_k,\quad
-  \vect{n}_k\sim\mathcal{N}(\vect{0},\mat{R}_n),
-  \label{eq:measurement}
-\end{equation}
-where the residual $\vect{r}_k = \vect{y}_k - h(\vect{x}_{a,k}) \in\R^{12}$
-is computed using the same Lie-invariant Log map as the arrival cost
-(Section~\ref{sec:arrival}):
-\begin{equation}
-  h(\vect{x}_a)
-  = \bigl[\vect{p}^\top,\;\vect{v}^\top,\;
-          \vect{\varepsilon}_q(\vect{q},\vect{y}_{q})^\top,\;
-          \vect{\omega}^\top\bigr]^\top,
-  \label{eq:h_meas}
-\end{equation}
-so the measurement cost becomes
-$\ell_y = \norm{\vect{r}_k}^2_{\mat{R}_n^{-1}}$ with
-$\mat{R}_n = \mathrm{diag}(\sigma_p^2\mat{I}_3,\,
-             \sigma_v^2\mat{I}_3,\,\sigma_q^2\mat{I}_3,\,
-             \sigma_\omega^2\mat{I}_3)\in\R^{12\times12}$.
-The quaternion block contributes a 3-dimensional tangent-space residual
-rather than the 4-dimensional raw difference.
-The parameters $(m,\tau_{\mathrm{rc}},\vect{d})$ are not directly measured;
-they are identified through prediction residuals in the
-dynamics~\eqref{eq:dynamics}.
-
-\subsection{MHE Optimal Control Problem}
-
-At time step $k$ the MHE estimates the augmented state trajectory
-over the past $N_e$ steps.
-Let $\bar{\vect{x}}_{a}$ and $\bar{\mat{P}}$ denote the prior mean
-and covariance at the window start $k\!-\!N_e$.
-The estimator solves
-\begin{subequations}\label{eq:mhe_ocp}
+\subsection{OCP formulation}
+The MHE problem solved at each step is
 \begin{align}
-  \min_{\substack{\vect{x}_{a,j},\;\vect{w}_{a,j}\\j\in[k-N_e,\,k]}}
-  \;\;& \Phi_{\mathrm{arr}}\!\bigl(\vect{x}_{a,k-N_e}\bigr)
-  + \sum_{j=k-N_e}^{k-1}\!
-    \Bigl[\ell_y\!\bigl(\vect{y}_j,\vect{x}_{a,j}\bigr)
-    + \norm{\vect{w}_{a,j}}^2_{\mat{Q}_w^{-1}}\Bigr]
-  + \ell_y\!\bigl(\vect{y}_k,\vect{x}_{a,k}\bigr)
-  \label{eq:mhe_cost}\\
-  \st\quad
-  & \vect{x}_{a,j+1} = F\!\bigl(\vect{x}_{a,j},\,\vect{u}_j\bigr)
-                       + \mat{G}\,\vect{w}_{a,j},
-  \label{eq:mhe_dyn}\\
-  & \vect{x}_{a,j} \in \mathcal{X}_a,
-  \label{eq:mhe_bounds}
+\min_{\vect x_T(\cdot),\,\vect w(\cdot)}\quad
+& \sum_{k=0}^{N-1}\!\Big[\|\vect y_k-\vect h(\vect x_{T,k})\|_{\mat R}^2 + \|\vect w_k\|_{\mat Q_w}^2\Big] \nonumber\\
+& {} + \|\vect y_N-\vect h(\vect x_{T,N})\|_{\mat R}^2 + J_{\text{prior}}(\vect x_{T,0}) \nonumber\\
+\text{s.t.}\quad
+& \eqref{eq:dv-t},\;\eqref{eq:rw},\quad
+m\in[m_{\min},m_{\max}],\;\vect d\in\Omega_d,
+\label{eq:mhe-ocp}
 \end{align}
-\end{subequations}
-where $F:\R^{21}\!\times\!\R^5\!\to\!\R^{21}$ is the discretised
-augmented dynamics~\eqref{eq:dynamics}--\eqref{eq:param_dynamics},
-$\mat{G}\in\R^{21\times5}$ maps process noise into the five
-parameter slots $[m,\tau_{\mathrm{rc}},\vect{d}^\top]^\top$, and
-$\mathcal{X}_a$ enforces physical bounds on the estimated
-parameters and states (see Table~\ref{tab:solver_params}).
-The measurement cost uses the Lie-invariant residual~\eqref{eq:h_meas}:
+where $\vect h(\vect x_T)=[\vect p,\vect v]$.  The OCP is
+discretised with $N=31$ shooting nodes at $\dt=0.032$\,s, giving
+a horizon $T\!\approx\!1$\,s consistent with the window length
+used in the identifiability analysis.
+
+\subsection{Numerical solver}
+We solve \eqref{eq:mhe-ocp} with acados~\cite{verschueren2022acados}
+using SQP\_RTI (a single SQP iteration per control step) and
+PROJECT\_REDUC\_HESS regularisation.  The integrator is explicit
+fourth-order Runge--Kutta.  With the $10$-D state and the
+removed quaternion nonlinearity, a single SQP iteration completes
+in $\sim$\,1.7\,ms on a desktop-class CPU; see
+Section~\ref{sec:budget} for the detailed budget.
+
+\subsection{Why the reduction matters numerically}
+The conventional full-state MHE~\cite{liu2023nonlinear,kabzan2019learning}
+augments $(\vect p,\vect v,\vect q,\vect\omega)$ with $(m,\vect d)$
+or similar parameters.  Two specific numerical issues plague
+this formulation:
+\begin{itemize}
+\item The Lie-invariant arrival cost
+$\|\!\Logm(\vect q_{\text{meas}}^{-1}\otimes \vect q)\!\|$ has a
+Jacobian that is singular at the identity, and the standard
+implementation~\cite{forster2015imu} requires a hand-coded
+$\sqrt{\cdot+\epsilon}$ inside the log map to avoid NaN
+gradients;
+\item The quaternion integration over a $1$\,s window drifts due
+to accumulated linearisation error and forces frequent QP
+re-projections.
+\end{itemize}
+By removing $\vect q,\vect\omega$ from the state we eliminate
+both issues structurally.  On real-time MuJoCo data, the QP
+success rate of the $10$-D MHE is $100\%$ over $63$\,s of
+flight; the corresponding full-state MHE drops below $1\%$.
+
+% ════════════════════ RLS ════════════════════
+\section{RLS Identification of Actuator Time Constants}\label{sec:rls}
+
+\subsection{Rate-loop time constant}
+Equation~\eqref{eq:dw} is linear in $k_\tau=1/\tau_{rc}$.  Writing
+the backward-difference approximation
+\[
+\dot{\vect\omega}(t)\approx \frac{\vect\omega(t)-\vect\omega(t-\dt)}{\dt},
+\]
+and stacking the three components, we obtain at each control
+step the scalar regression
 \begin{equation}
-  \ell_y(\vect{y}_j,\vect{x}_{a,j})
-  = \norm{\vect{y}_j - h(\vect{x}_{a,j})}^2_{\mat{R}_n^{-1}}.
-  \label{eq:meas_cost}
+\dot{\vect\omega}(t) \;=\; k_\tau\,\big(\vect\omega_{cmd}(t-\dt)-\vect\omega(t-\dt)\big).
+\label{eq:rls-ktau-step}
 \end{equation}
-
-\subsection{Lie-Invariant Arrival Cost}
-\label{sec:arrival}
-
-The arrival cost $\Phi_{\mathrm{arr}}$ summarises information
-accumulated before the current window.
-A Euclidean formulation,
-\begin{equation}
-  \Phi_{\mathrm{arr}}^{\text{Eucl}}(\vect{x}_a)
-  = \norm{\vect{x}_a - \bar{\vect{x}}_{a}}^2_{\bar{\mat{P}}^{-1}},
-  \label{eq:euclidean_arrival}
-\end{equation}
-treats quaternions as elements of $\R^4$.
-Because both $\vect{q}$ and $-\vect{q}$ represent the same
-rotation in $\SO$, this cost is \emph{not} invariant under the
-double-cover map $\pi:\mathcal{S}^3\to\SO$:
-when the estimator state crosses a hemisphere boundary,
-$\norm{\vect{q}-\bar{\vect{q}}}^2$ reports a spurious error
-even though $\mat{R}(\vect{q})=\mat{R}(\bar{\vect{q}})$.
-
-We replace the quaternion block with the left-invariant Riemannian
-metric on $\SO$.
-Define the quaternion error
-\begin{equation}
-  \vect{q}_e = \bar{\vect{q}}^{-1}\otimes\vect{q},\qquad
-  \bar{\vect{q}}^{-1}\triangleq[\bar{q}_w,\,-\bar{\vect{q}}_v^\top]^\top,
-  \label{eq:q_error}
-\end{equation}
-and apply the hemisphere correction
-\begin{equation}
-  \tilde{\vect{q}}_e = \operatorname{sgn}(q_{e,w})\,\vect{q}_e
-  \label{eq:hemisphere}
-\end{equation}
-to ensure $\tilde{q}_{e,w}\ge0$, where
-$\operatorname{sgn}(0)\triangleq 1$.
-The rotation-vector error in $\so\cong\R^3$ is
-\begin{equation}
-  \vect{\varepsilon}_q(\vect{q},\bar{\vect{q}})
-  = \Log_{\mathcal{S}^3}\!\bigl(\tilde{\vect{q}}_e\bigr)
-  \triangleq 2\,\frac{\atan\!\bigl(\norm{\tilde{\vect{q}}_{e,v}},\,
-                     \tilde{q}_{e,w}\bigr)}
-             {\norm{\tilde{\vect{q}}_{e,v}}+\epsilon}\,
-    \tilde{\vect{q}}_{e,v},
-  \label{eq:log_map}
-\end{equation}
-with $\epsilon=10^{-9}$ for numerical stability.
-The factor of 2 arises because the unit quaternion encodes
-the half-angle: $\vect{q}=[\cos(\phi/2),\,\sin(\phi/2)\,\vect{n}^\top]^\top$
-for rotation angle $\phi$ about axis $\vect{n}$, so the standard
-$\SO$ logarithm $\Log_{\SO(3)}(\mat{R})=\phi\,\vect{n}$ requires
-$\phi = 2\arctan(\norm{\vect{q}_v},q_w)$.
-
-The Lie-invariant arrival cost is
-\begin{multline}
-  \Phi_{\mathrm{arr}}(\vect{x}_a)
-  = \norm{\vect{p}-\bar{\vect{p}}}^2_{\mat{P}_p^{-1}}
-  + \norm{\vect{v}-\bar{\vect{v}}}^2_{\mat{P}_v^{-1}}
-  + \norm{\vect{\varepsilon}_q}^2_{\mat{P}_q^{-1}} \\
-  + \norm{\vect{\omega}-\bar{\vect{\omega}}}^2_{\mat{P}_\omega^{-1}}
-  + \norm{\vect{\theta}-\bar{\vect{\theta}}}^2_{\mat{P}_\theta^{-1}},
-  \label{eq:lie_arrival}
-\end{multline}
-where
-$\vect{\theta}\triangleq[m,\,\tau_{\mathrm{rc}},\,\vect{d}^\top]^\top
-\!\in\!\R^5$
-collects the estimated parameters,
-$\mat{P}_{(\cdot)}\succ 0$ are the corresponding diagonal blocks of
-$\bar{\mat{P}}$, and the virtual-state block
-$\mat{P}_{\xi}\in\R^{3\times3}$ covers
-$(\theta,v_\theta,f)$.
-The quaternion block $\mat{P}_q\in\R^{3\times3}$ operates in the
-tangent space $\so\cong\R^3$, not $\R^4$, so $\bar{\mat{P}}$ is
-$20\times20$ rather than $21\times21$.
-
-The hemisphere correction~\eqref{eq:hemisphere} ensures that the
-arrival cost~\eqref{eq:lie_arrival} is invariant under the
-double-cover sign flip $\vect{q}\mapsto-\vect{q}$: flipping the
-sign of $\vect{q}$ negates the error quaternion $\vect{q}_e$, but
-the $\operatorname{sgn}(\cdot)$ factor absorbs the extra minus sign,
-leaving $\tilde{\vect{q}}_e$ and therefore $\Phi_{\mathrm{arr}}$
-unchanged.
-This prevents fictitious attitude jumps when the quaternion crosses
-the $q_w\!=\!0$ hemisphere boundary during aggressive
-manoeuvres --- precisely the regime encountered at peak-curvature
-points of the Lissajous trajectory (Section~\ref{sec:results}).
-
-\subsection{Arrival Cost Propagation}
-
-After each solved window, the prior is propagated by one step using
-an extended Kalman prediction:
-\begin{subequations}\label{eq:arrival_prop}
+We solve \eqref{eq:rls-ktau-step} recursively with a
+forgetting-factor RLS,
 \begin{align}
-  \bar{\vect{x}}_{a}^+ &= F\!\bigl(\hat{\vect{x}}_{a,k-N_e},\,
-                           \vect{u}_{k-N_e}\bigr),
-  \label{eq:prior_mean}\\
-  \bar{\mat{P}}^+ &= \mat{A}_k\,\bar{\mat{P}}\,\mat{A}_k^\top
-                     + \mat{G}\,\mat{Q}_w\,\mat{G}^\top,
-  \label{eq:prior_cov}
+S_\tau(t) &= \lambda S_\tau(t-\dt) + \sum_{i=1}^3 \dot\omega_i(t)\,u_i(t-\dt), \\
+N_\tau(t) &= \lambda N_\tau(t-\dt) + \sum_{i=1}^3 u_i(t-\dt)^2, \\
+\hat k_\tau(t) &= \mathrm{sat}_{[1,200]}\big( S_\tau(t)\,/\,N_\tau(t) \big),
 \end{align}
-\end{subequations}
-where
-$\mat{A}_k=\partial F/\partial\vect{x}_a\big|_{\hat{\vect{x}}_{a,k-N_e}}$
-is the discrete-dynamics Jacobian and $\hat{\vect{x}}_{a,k-N_e}$ is
-the MHE solution at the oldest node.
-The Jacobian $\mat{A}_k$ is $20\!\times\!20$ because the quaternion
-block is evaluated in the $\R^3$ tangent space via
-$\delta\vect{q}\approx\frac{1}{2}\vect{q}\otimes[0,\,\delta\vect{\phi}^\top]^\top$,
-consistent with the Log map~\eqref{eq:log_map}.
+where $u_i = \omega_{cmd,i}-\omega_i$ and the forgetting factor
+is $\lambda=0.997$, corresponding to an effective memory of
+$1/(1-\lambda)\approx 333$ samples ($3.3$\,s at $100$\,Hz).  The
+projection $\mathrm{sat}_{[1,200]}$ enforces physical bounds and
+prevents the estimate from drifting under brief stalls.  No
+horizon is required because~\eqref{eq:rls-ktau-step} is
+\emph{locally} observable as soon as
+$\vect\omega_{cmd}\neq\vect\omega$.
 
-
-% ══════════════════════ IV. ADAPTIVE MPCC ════════════════
-\section{Adaptive Model Predictive Contouring Control}
-\label{sec:mpcc}
-
-Given the parameter estimates $\hat{\vect{\theta}}_k$ and uncertainty
-$\sigma_k$ from the MHE (Section~\ref{sec:mhe}), we now formulate
-the MPCC that consumes these outputs to adapt its prediction model
-and aggressiveness online.
-
-\subsection{MPCC Virtual States and Control Input}
-\label{sec:mpcc_state}
-
-Model Predictive Contouring Control appends three virtual states
-to track path progress~\cite{romero2022mpcc}:
-arc-length $\theta\in\R_{\ge0}$ [m],
-progress velocity $v_\theta\in\R_{\ge0}$ [m/s],
-and collective thrust $f\in\R_{\ge0}$ [N].
-The \emph{thrust-as-state} formulation~\cite{romero2022mpcc} avoids
-discontinuous thrust commands: the control input is the thrust
-\emph{rate} $\Delta f = \dot{f}$, so $f$ evolves smoothly.
-The full MPCC state and control vectors are
+\subsection{Thrust time constant}
+The thrust state $f(t)$ is not measured directly.  Once
+$\hat m(t)$ is available from the translational MHE, we
+reconstruct it from the translational acceleration as
 \begin{equation}
-  \vect{x} = [\vect{x}_{\mathrm{phy}}^\top,\;\theta,\;v_\theta,\;f]^\top
-             \in\R^{16},\qquad
-  \vect{u} = [\Delta f,\;\vect{\omega}_c^\top,\;a_\theta]^\top\in\R^5,
-  \label{eq:mpcc_state}
+\hat f(t) \;=\; \hat m(t)\,\big\|\dot{\vect v}(t)+g\vect e_3\big\|,
+\label{eq:f-recon}
 \end{equation}
-where $a_\theta = \dot{v}_\theta$ is the progress acceleration.
-The virtual-state dynamics extend~\eqref{eq:dynamics} with
+and then identify $k_f$ from the linear lag equation
 \begin{equation}
-  \dot{\theta} = v_\theta,\qquad
-  \dot{v}_\theta = a_\theta,\qquad
-  \dot{f} = \Delta f.
-  \label{eq:virtual_dyn}
+\dot{\hat f}(t) \;=\; k_f\,(T(t)-\hat f(t))
+\label{eq:rls-kf-step}
 \end{equation}
-All 16 states are integrated inside the OCP via ERK4; only the
-physical states $\vect{x}_{\mathrm{phy}}$ are fed back from odometry
-at runtime (Section~\ref{sec:architecture}).
-
-\subsection{Contouring and Lag Error Decomposition}
-\label{sec:errors}
-
-At arc-length $\theta$, the position error to the path is
-$\vect{e}_t(\theta) = \vect{p}_d(\theta) - \vect{p}$.
-This decomposes orthogonally into:
-\begin{subequations}\label{eq:errors}
+with the same RLS structure as for $k_\tau$,
 \begin{align}
-  e_l(\theta) &= \vect{\tau}(\theta)^\top\vect{e}_t(\theta), \label{eq:lag}\\
-  \vect{e}_c(\theta) &= \mat{P}_\perp(\theta)\,\vect{e}_t(\theta),\label{eq:cont}
+S_f(t) &= \lambda S_f(t-\dt) + \dot{\hat f}(t)\,(T(t)-\hat f(t)), \\
+N_f(t) &= \lambda N_f(t-\dt) + (T(t)-\hat f(t))^2, \\
+\hat k_f(t) &= \mathrm{sat}_{[10,500]}\big( S_f(t)\,/\,N_f(t) \big).
 \end{align}
-\end{subequations}
-where $\mat{P}_\perp(\theta)=\mat{I}_3-\vect{\tau}\vect{\tau}^\top$
-is the contouring projector.
-The decomposition satisfies
-$\norm{\vect{e}_t}^2 = e_l^2 + \norm{\vect{e}_c}^2$.
+The reconstruction~\eqref{eq:f-recon} requires only $\hat m$ and
+the translational acceleration, so the data path remains
+decoupled from the rotational equation.
 
-\subsection{Contouring Cost and Lie-Invariant Attitude Error}
-
-At prediction stage $j\in\{0,\ldots,N\}$, with path parameter
-$\theta_j$ and drone attitude $\vect{q}_j$, the attitude error is
-computed via the same Log map used in Section~\ref{sec:arrival},
-evaluated at the path-referenced attitude $\vect{q}_d(\theta_j)$:
-\begin{equation}
-  \vect{\varepsilon}_{q,j}
-  = \Log_{\mathcal{S}^3}\!\bigl(\tilde{\vect{q}}_{e,j}\bigr),\quad
-  \vect{q}_{e,j} = \vect{q}_d(\theta_j)^{-1}\otimes\vect{q}_j,
-  \label{eq:att_err_mpcc}
-\end{equation}
-with hemisphere correction~\eqref{eq:hemisphere}.
-Using the same geometric error in both the MHE arrival cost and the
-MPCC stage cost ensures end-to-end Lie-invariant consistency.
-
-The angular-rate tracking error with feedforward~\eqref{eq:omega_ff}
-is
-\begin{equation}
-  \tilde{\vect{\omega}}_j
-  = \vect{\omega}_{c,j} - \hat{\vect{\omega}}(\theta_j)\,v_{\theta,j}
-  \in\R^3.
-  \label{eq:rate_err}
-\end{equation}
-
-The stage cost is
-\begin{multline}
-  \ell(\vect{x}_j,\vect{u}_j)
-  = \norm{\vect{e}_{c,j}}^2_{\mat{Q}_c}
-  + e_{l,j}^2\,Q_l
-  + \norm{\vect{\varepsilon}_{q,j}}^2_{\mat{Q}_q} \\
-  + W_{\Delta f}\,\Delta f_j^2
-  + \norm{\tilde{\vect{\omega}}_j}^2_{\mat{W}_\omega}
-  - W_s(k)\,v_{\theta,j},
-  \label{eq:mpcc_stage}
-\end{multline}
-and the terminal cost (no progress term) is
-\begin{equation}
-  \ell_N(\vect{x}_N)
-  = \norm{\vect{e}_{c,N}}^2_{\mat{Q}_c}
-  + e_{l,N}^2\,Q_l
-  + \norm{\vect{\varepsilon}_{q,N}}^2_{\mat{Q}_q}.
-  \label{eq:mpcc_terminal}
-\end{equation}
-The negative term $-W_s(k)\,v_{\theta,j}$ maximises progress speed
-along the path; all other terms penalise deviations.
-The weight matrices $\mat{Q}_c,Q_l,\mat{Q}_q,\mat{W}_\omega\succ0$
-and scalar $W_{\Delta f}>0$ are fixed; only $W_s(k)$ varies online.
-
-\subsection{MPCC Optimal Control Problem}
-
-At step $k$ the MPCC solves the OCP over the
-\emph{16-state} model~\eqref{eq:mpcc_state}--\eqref{eq:virtual_dyn}:
-\begin{subequations}\label{eq:mpcc_ocp}
-\begin{align}
-  \min_{\vect{u}_0,\ldots,\vect{u}_{N-1}}
-  \;&
-  \sum_{j=0}^{N-1}\!\ell(\vect{x}_j,\vect{u}_j) + \ell_N(\vect{x}_N)
-  \label{eq:mpcc_obj}\\
-  \st\quad
-  & \vect{x}_0 = \hat{\vect{x}}_k,
-  \label{eq:mpcc_ic}\\
-  & \vect{x}_{j+1} = F\!\bigl(\vect{x}_j,\vect{u}_j;\,
-    \hat{m}_k,\,\hat{k}_{\tau,k},\,\hat{\vect{d}}_k\bigr),
-  \label{eq:mpcc_dyn}\\
-  & 0\!\le\! f_j\!\le\!T_{\max},\;
-    |\Delta f_j|\!\le\!\Delta f_{\max},
-  \label{eq:thrust_bounds}\\
-  & \norm{\vect{\omega}_{c,j}}_\infty\!\le\!\omega_{\max},\;
-    0\!\le\! v_{\theta,j}\!\le\! v_{\theta,\max},
-  \label{eq:rate_bounds}\\
-  & |e_{l,j}|\le D_{\max}\quad\text{(soft, L2 penalty)}.
-  \label{eq:lag_soft}
-\end{align}
-\end{subequations}
-The dynamics $F$ in~\eqref{eq:mpcc_dyn} integrate the full 16-state
-model using the MHE parameter estimates
-$\hat{\vect{\theta}}_k=[\hat{m}_k,\,\hat{k}_{\tau,k},\,
-\hat{\vect{d}}_k^\top]^\top\in\R^5$
-as fixed runtime parameters within the prediction horizon, where
-$\hat{k}_{\tau,k}=1/\hat{\tau}_{\mathrm{rc},k}$ (see implementation
-note in Section~\ref{sec:model}).
-To prevent premature injection of unconverged estimates, the parameter
-update is gated: only when $\sigma_k < \sigma_{\mathrm{thr}}$ does the
-MPCC receive $\hat{\vect{\theta}}_k$; otherwise it falls back to
-nominal values $\vect{\theta}_0=[m_0,\,k_{\tau,0},\,\vect{0}]^\top$.
-Furthermore, an \emph{exponential moving average} (EMA) is applied
-to the raw MHE output before injection, suppressing window-shift
-step changes without introducing estimator bias.
-Constraint~\eqref{eq:lag_soft} prevents excessive lag accumulation.
-All design parameters are listed in Table~\ref{tab:solver_params}
-(Section~\ref{sec:setup}).
-
-\subsection{Adaptive Progress Weight}
-\label{sec:adaptive_ws}
-
-The scalar $\sigma_k = \operatorname{tr}(\bar{\mat{P}}_{\theta,k})$,
-where $\bar{\mat{P}}_{\theta,k}\in\R^{5\times5}$ is the parameter
-uncertainty block of the MHE prior covariance at step $k$, quantifies
-how well $\hat{\vect{\theta}}_k$ is currently known.
-We define the \emph{adaptive progress weight}
-\begin{equation}
-  W_s(k) = \frac{W_{s,\max}}{1 + \alpha\,\sigma_k},
-  \label{eq:adaptive_ws}
-\end{equation}
-where $W_{s,\max}>0$ sets the maximum aggressiveness and $\alpha>0$
-controls sensitivity.
-
-\noindent\textbf{Physical interpretation.}
-When $\sigma_k$ is large (estimator uncertain, e.g.\ unknown payload
-just attached), $W_s(k)\!\to\!0$ and the MPCC does not push $v_\theta$
-hard — it tracks the path conservatively while the MHE gathers
-information.
-As $\hat{m}_k$ and $\hat{\vect{d}}_k$ converge, $\sigma_k$ decreases
-and $W_s(k)\!\to\!W_{s,\max}$: the controller progressively recovers
-near-optimal lap time with no manual intervention.
-
-\noindent\textbf{Implementation.}
-$W_s(k)$ is computed outside the OCP and injected as runtime parameter
-$p[13]$ via the acados parameter interface at each control step.
-This requires no structural change to the OCP — only a scalar update
-costs negligible computation.
-
-
-% ══════════════════════ V. ARCHITECTURE ══════════════════
-\section{Closed-Loop Architecture}
-\label{sec:architecture}
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[
-    block/.style={draw, rounded corners, minimum width=2.1cm,
-                  minimum height=0.8cm, align=center, font=\small},
-    adapt/.style={draw, rounded corners, minimum width=2.1cm,
-                  minimum height=0.7cm, align=center, font=\small,
-                  dashed},
-    arrow/.style={-Stealth, thick},
-    every node/.style={font=\small}
-  ]
-  % Nodes
-  \node[block] (plant) at (0,   0)    {Quadrotor\\(MuJoCo / HW)};
-  \node[block] (mhe)   at (4.2, 1.1)  {MHE\\(Lie-inv.\ cost)};
-  \node[adapt] (adapt) at (4.2, 0)    {Adaptive\\$W_s(k)$};
-  \node[block] (mpcc)  at (4.2,-1.1)  {MPCC\\(SQP-RTI)};
-  \node[block] (path)  at (7.8,-1.1)  {Path\\$\gamma(\theta)$};
-
-  % Plant → MHE (measurement)
-  \draw[arrow] (plant.east) -- ++(0.5,0)
-               coordinate (fork) |- (mhe.west)
-               node[above, pos=0.72]{\footnotesize$\vect{y}_k$};
-
-  % Plant → MPCC (virtual states, thin dashed)
-  \draw[arrow, dashed, thin] (fork) |- (mpcc.west)
-               node[below, pos=0.72]
-               {\footnotesize$\theta_k,v_{\theta,k},f_k$};
-
-  % MHE → adapt block
-  \draw[arrow] (mhe.south) --
-               node[right]{\footnotesize$\hat{\vect{x}}_k,\hat{\vect{\theta}}_k,\bar{\mat{P}}_{\theta,k}$}
-               (adapt.north);
-
-  % adapt → MPCC
-  \draw[arrow] (adapt.south) --
-               node[right]{\footnotesize$\hat{\vect{x}}_k,\hat{\vect{\theta}}_k,W_s(k)$}
-               (mpcc.north);
-
-  % Path → MPCC
-  \draw[arrow] (path.west) --
-               node[above]{\footnotesize$\gamma(\theta)$}
-               (mpcc.east);
-
-  % MPCC → plant
-  \draw[arrow] (mpcc.west) -- ++(-0.4,0) |-
-               node[left, pos=0.25]{\footnotesize$\vect{u}_k$}
-               (plant.south);
-\end{tikzpicture}
-\caption{Closed-loop MHE--MPCC architecture.
-  The MHE accumulates $N_e\!=\!20$ past measurements and returns:
-  physical state estimate $\hat{\vect{x}}_k\!\in\!\R^{13}$,
-  parameter estimate $\hat{\vect{\theta}}_k\!=\![\hat{m}_k,\,\hat{k}_{\tau,k},\,
-  \hat{\vect{d}}_k^\top]^\top\!\in\!\R^5$ (where $\hat{k}_{\tau}=1/\hat{\tau}_{\mathrm{rc}}$), and
-  prior covariance block $\bar{\mat{P}}_{\theta,k}\!\in\!\R^{5\times5}$.
-  The adaptive block computes $\sigma_k\!=\!\operatorname{tr}(\bar{\mat{P}}_{\theta,k})$
-  and injects $W_s(k)$ as a runtime parameter into the MPCC.
-  Virtual states $(\theta_k,v_{\theta,k},f_k)$ are integrated
-  outside the solver and fed forward to the MPCC initial condition.
-  Both solvers run sequentially at \SI{100}{\hertz}.}
-\label{fig:architecture}
-\end{figure}
-
-Algorithm~\ref{alg:main} summarises the online loop.
-The MHE and MPCC share no internal solver state; their coupling is
-one-directional: the MHE output $(\hat{\vect{x}}_k,\hat{\vect{\theta}}_k)$
-is injected into the MPCC as initial condition and model parameters.
-The additional signal $\bar{\mat{P}}_{\theta,k}$ feeds the adaptive
-weight~\eqref{eq:adaptive_ws} without altering the OCP structure.
-At step~3, the MHE solution $\hat{\vect{x}}_{a,k}\!\in\!\R^{21}$ is
-decomposed as: physical states
-$\hat{\vect{x}}_k\!=\!\hat{\vect{x}}_{a,k}[1\!:\!13]$,
-virtual states
-$(\hat{\theta}_k,\hat{v}_{\theta,k},\hat{f}_k)\!=\!\hat{\vect{x}}_{a,k}[14\!:\!16]$,
-and parameters
-$\hat{\vect{\theta}}_k\!=\![\hat{m}_k,\hat{\tau}_{\mathrm{rc},k},
-\hat{\vect{d}}_k^\top]^\top
-=\hat{\vect{x}}_{a,k}[17\!:\!21]$,
-from which $\hat{k}_{\tau,k}=1/\hat{\tau}_{\mathrm{rc},k}$
-is computed before injection into the MPCC.
+\subsection{Multi-rate scheduling}
+The three estimators run at their natural rates:
+\begin{itemize}
+\item Translational MHE at $33$\,Hz (every third $100$\,Hz step);
+\item RLS-rate at $100$\,Hz;
+\item RLS-thrust at $100$\,Hz.
+\end{itemize}
+The RLS estimators are non-blocking and add a fixed
+$\sim$\,5\,$\mu$s per call; the MHE consumes most of the
+parameter-estimation budget.  Algorithm~\ref{alg:pipeline}
+summarises the per-step pipeline.
 
 \begin{algorithm}[t]
-\caption{Online MHE--MPCC control loop (\SI{100}{\hertz})}
-\label{alg:main}
+\caption{Multi-rate parameter estimation per $100$\,Hz step.}
+\label{alg:pipeline}
 \begin{algorithmic}[1]
-\REQUIRE Prior $(\bar{\vect{x}}_a,\,\bar{\mat{P}})$;
-         precomputed path $\gamma(\theta)$;
-         virtual states $(\theta_0,v_{\theta,0},f_0)$.
-\FOR{$k = 0, 1, 2, \ldots$}
-  \STATE Read odometry $\vect{y}_k$
-  \STATE \textbf{MHE}: solve~\eqref{eq:mhe_ocp}
-         $\;\Rightarrow\;
-         \hat{\vect{x}}_k\!\in\!\R^{13},\;
-         \hat{\vect{\theta}}_k\!\in\!\R^5,\;
-         \bar{\mat{P}}_{\theta,k}\!\in\!\R^{5\times5}$
-  \STATE Propagate arrival cost prior:
-         $(\bar{\vect{x}}_a^+,\bar{\mat{P}}^+)$
-         via~\eqref{eq:arrival_prop}
-  \STATE Compute uncertainty and adaptive weight:
-         $\sigma_k \gets \operatorname{tr}(\bar{\mat{P}}_{\theta,k})$,\;
-         $W_s(k) \gets W_{s,\max}/(1+\alpha\,\sigma_k)$
-  \STATE Apply EMA filter to raw MHE output:
-         $\hat{\vect{\theta}}_k^{\mathrm{ema}} \gets
-           \vect{\alpha}\!\odot\!\hat{\vect{\theta}}_{k-1}^{\mathrm{ema}}
-           + (\vect{1}-\vect{\alpha})\!\odot\!\hat{\vect{\theta}}_k$
-  \STATE Determine injected parameters:
-         $\hat{\vect{\theta}}_k^{\mathrm{inj}} \gets
-           \hat{\vect{\theta}}_k^{\mathrm{ema}}$
-         if $\sigma_k < \sigma_{\mathrm{thr}}$,
-         else $\vect{\theta}_0$ (nominal)
-  \STATE \textbf{MPCC}: set initial condition
-         $\vect{x}_0\!=\![\hat{\vect{x}}_k^\top,\,\theta_k,\,v_{\theta,k},\,f_k]^\top$,
-         update $\hat{\vect{\theta}}_k^{\mathrm{inj}}$ in~\eqref{eq:mpcc_dyn},
-         inject $W_s(k)$ as runtime parameter;\\
-         \quad solve~\eqref{eq:mpcc_ocp}
-         $\;\Rightarrow\;
-         \vect{u}_k^*=[\Delta f_k^*,\,\vect{\omega}_{c,k}^{*\top},\,a_{\theta,k}^*]^\top$
-  \STATE Integrate virtual states (Euler):
-         $\theta_{k+1}\!\gets\!\theta_k + v_{\theta,k}\,\Delta t$;\;
-         $v_{\theta,k+1}\!\gets\!v_{\theta,k} + a_{\theta,k}^*\,\Delta t$;\;
-         $f_{k+1}\!\gets\!f_k + \Delta f_k^*\,\Delta t$
-  \STATE Apply commands: thrust $f_k$, body rates $\vect{\omega}_{c,k}^*$
-\ENDFOR
+\STATE \textbf{Inputs:} $(\vect p,\vect v,\vect q,\vect\omega), (T,\vect\omega_{cmd})$ at time $t$.
+\STATE \textbf{Compute thrust direction:} $\vect a \leftarrow \vect R(\vect q)\vect e_3$.
+\STATE \textbf{RLS-rate update:} \\
+\quad $u \leftarrow \vect\omega_{cmd}-\vect\omega$;
+$\dot\omega \leftarrow (\vect\omega(t)-\vect\omega(t-\dt))/\dt$. \\
+\quad Update $(S_\tau,N_\tau)$ with $\lambda$;
+$\hat k_\tau \leftarrow \mathrm{sat}(S_\tau/N_\tau)$.
+\STATE \textbf{RLS-thrust update:} \\
+\quad $\hat f \leftarrow \hat m\|\dot{\vect v}+g\vect e_3\|$;
+$\dot{\hat f}\leftarrow (\hat f(t)-\hat f(t-\dt))/\dt$. \\
+\quad Update $(S_f,N_f)$;
+$\hat k_f \leftarrow \mathrm{sat}(S_f/N_f)$.
+\IF{$t$ is a multiple of $3\dt$ \;(i.e., $33$\,Hz)}
+   \STATE \textbf{MHE update:} \\
+   \quad Slide window; set inputs $(f,\vect a)$ from buffer. \\
+   \quad Solve \eqref{eq:mhe-ocp} with acados SQP\_RTI. \\
+   \quad Read $\hat m,\hat{\vect d}$ from the latest stage.
+\ENDIF
+\STATE Apply EMA smoothing
+$\hat m \leftarrow \alpha_m \hat m_{\text{prev}} + (1-\alpha_m)\hat m_{\text{MHE}}$
+(idem for $\hat{\vect d}$).
+\STATE \textbf{Return:} $(\hat m, \hat{\vect d}, \hat k_\tau, \hat k_f)$.
 \end{algorithmic}
 \end{algorithm}
 
-% ══════════════════════ VI. RESULTS ════════════════════════
-\section{Experimental Results}
-\label{sec:results}
+\subsection{Smoothing}
+Outputs of all three estimators are passed through an
+exponential moving-average (EMA) low-pass with time constants
+$\sim$\,0.5\,s for the parameters $(m,\tau_{rc},\tau_f)$ and
+$\sim$\,0.12\,s for the disturbance $\vect d$.  The EMA absorbs
+step changes introduced by window slide and removes
+high-frequency oscillations without introducing bias.
 
-This section validates the closed-loop MHE--MPCC architecture
-(Algorithm~\ref{alg:main}) in three stages: (i)~SiL experiments
-with mass mismatch, (ii)~SiL experiments with wind disturbances,
-and (iii)~hardware experiments on a physical quadrotor.
+% ════════════════════ SETUP ════════════════════
+\section{Experimental Setup}\label{sec:setup}
 
-\subsection{Experimental Setup}
-\label{sec:setup}
+\subsection{Simulator}
+We use MuJoCo~\cite{todorov2012mujoco} as the high-fidelity
+simulator.  The vehicle is the \texttt{quadrotor\_acro\_motors}
+model, total mass $m^{\text{true}}=1.05$\,kg, body inertia
+matrix taken from the model file, four rotors with motor and
+propeller dynamics, and a body-rate-controlled inner loop.
+Sensor noise is added externally to position
+($\sigma_p=0.005$\,m), velocity ($\sigma_v=0.02$\,m/s), and
+angular rate ($\sigma_\omega=0.01$\,rad/s).  The thrust direction
+$\vect a$ is sourced from the MuJoCo attitude with
+$\sigma_q=0.005$\,rad per axis.
 
-\subsubsection{Platform}
-The SiL experiments use MuJoCo with full rigid-body contact dynamics
-and a realistic motor model, interfaced via ROS\,2 Humble at
-\SI{100}{\hertz} ($\Delta t=\SI{10}{ms}$).
-Hardware experiments use the same software stack deployed on
-a custom quadrotor with onboard state estimation.
-Both solvers are generated with
-acados~\cite{verschueren2022acados}/CasADi~\cite{andersson2019casadi}
-and execute single-threaded on an Intel Core~i7.
-Table~\ref{tab:solver_params} lists all design parameters.
+\subsection{Controller}
+The outer-loop controller is a nonlinear MPC solved with
+acados~\cite{verschueren2022acados}, with $N=31$ shooting nodes,
+prediction horizon $T_h=1.5$\,s, and state
+$(\vect p,\vect v,\vect q,\vect\omega)$.  The controller runs at
+$100$\,Hz.  The reference is a temporal Lissajous of the form
+$\vect r(t)=[A_x\sin(\omega_x t),\,A_y\sin(\omega_y t+\phi),\,z_0]$
+with $A_x=A_y=2.5$\,m, $z_0=1.5$\,m, and amplitude swept to reach
+the target peak speed.  We report a representative agile case
+at peak speed $12$\,m/s.
 
-\begin{table}[t]
-\centering
-\caption{MPCC and MHE design parameters.}
-\label{tab:solver_params}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Parameter} & \textbf{MPCC} & \textbf{MHE} \\
-\midrule
-States / controls      & $16$ / $5$       & $21$ (aug.) / $5$     \\
-Horizon stages $N$     & $50$             & $N_e=20$        \\
-Time grid $T_h$        & \SI{1.5}{s} (non-unif.) & \SI{0.2}{s} \\
-Integrator             & ERK4             & ERK4            \\
-QP solver              & HPIPM            & HPIPM           \\
-NLP solver             & SQP-RTI (1 iter) & SQP-RTI (1 iter)\\
-Regularisation         & PROJECT + LM     & PROJECT\_REDUC + LM \\
-$m$ bounds             & —                & $[0.5,\;\SI{3.0}{kg}]$ \\
-$\tau_{\mathrm{rc}}$ bounds & —           & $[0.005,\;\SI{0.15}{s}]$ \\
-$\norm{\vect{d}}_\infty$ bound & —       & $\SI{8}{m/s^2}$ \\
-$f$ bounds             & $[0,\;\SI{49.05}{N}]$ & —          \\
-$\Delta f_{\max}$      & \SI{500}{N/s}    & —               \\
-$\omega_{\max}$        & \SI{20}{rad/s}   & —               \\
-$a_{\theta}$ bounds    & $\pm 4g$\;\si{m/s^2} & —           \\
-$v_{\theta,\max}$      & \SI{14}{m/s}     & —               \\
-$D_{\max}$ (lag)       & \SI{0.5}{m}      & —               \\
-$\sigma_{\mathrm{thr}}$ & $0.05$          & —               \\
-$\alpha_{\mathrm{EMA},m/\tau}$ & $0.98$  & —               \\
-$\alpha_{\mathrm{EMA},d}$ & $0.92$       & —               \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Parameter initialisation}
+The estimator is initialised deliberately far from the true
+values:
+\[
+m_0 = 0.90\;\text{kg},\quad
+\tau_{rc}^0 = 0.030\;\text{s},\quad
+\tau_f^0 = 0.10\;\text{s}.
+\]
+The true values, recovered from offline batch identification,
+are $m=1.05$\,kg, $\tau_{rc}\approx 0.056$\,s,
+$\tau_f\approx 0.009$\,s.  The initial bias is therefore $-14\%$
+for $m$, $-46\%$ for $\tau_{rc}$ and $+1011\%$ for $\tau_f$.
 
-\subsubsection{Path and speed}
-The reference path is a three-dimensional Lissajous figure
-parameterised in arc-length with $s_{\max}=\SI{100}{m}$
-(Section~\ref{sec:path}), traversed at a maximum progress speed
-$v_{\theta,\max}=\SI{10}{m/s}$.
-
-\subsubsection{Mass mismatch scenario}
-A deliberate mass error is introduced: the true vehicle mass is
-$m_{\mathrm{true}}=\SI{1.08}{kg}$ while both modes are initialised
-with a nominal guess $m_0=\SI{0.9}{kg}$, corresponding to a
-$-17\%$ error.
-
-\subsubsection{Wind disturbance scenarios}
-Three wind profiles are applied via MuJoCo's external force interface
-to evaluate the disturbance estimator $\hat{\vect{d}}$:
+\subsection{Metrics}
+We report:
 \begin{itemize}
-  \item \textbf{Constant wind:} a steady force
-        ($\approx$10\% of vehicle weight) along the inertial
-        $x$-axis throughout the flight.
-  \item \textbf{Gust:} a short-duration impulse applied at
-        mid-flight, simulating a localised wind burst.
-  \item \textbf{Turbulence:} band-limited random forcing with
-        a Dryden-like spectrum, applied on all three axes.
+\item Real-time parameter estimates over a $63$\,s run, with the
+first half discarded as the convergence transient;
+\item Tracking RMSE of the NMPC closed loop with and without
+identified parameters;
+\item Per-step computational cost of each estimator;
+\item QP success rate of the MHE versus the full-state MHE
+baseline.
 \end{itemize}
 
-\subsubsection{Compared modes}
-Two operating modes are compared:
+% ════════════════════ RESULTS ════════════════════
+\section{Results}\label{sec:results}
+
+\subsection{Velocity sweep: identification quality vs excitation}
+We run the full multi-rate pipeline at six trajectory speeds by
+scaling the Lissajous angular frequency
+$w\!\in\!\{0.5,1.0,1.5,2.0,2.5,3.0\}$\,rad/s, which yields
+measured peak speeds from $\sim$\,3 to $\sim$\,12\,m/s.  All six
+runs start from the same wrong nominals
+$(m_0,\tau_{rc}^0,\tau_f^0)\!=\!(0.90,0.030,0.10)$.
+Fig.~\ref{fig:vsweep} plots the converged estimates as a function
+of the per-run $v_{peak}$, and Table~\ref{tab:converged} reports
+the numerical values.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../results/velocity_sweep.png}
+\caption{Identification pattern across the velocity sweep.  Mass
+is identified accurately even at low speed, because the
+translational acceleration excites the $f\vect a$ column of the
+regressor $\Phi$.  The actuator time constants
+$\hat\tau_{rc}$ and $\hat\tau_f$ converge monotonically toward
+their true values as $v_{peak}$ increases: at low excitation
+the rate-loop and thrust-loop are barely commanded so their RLS
+residuals carry little information; above
+$v_{peak}\!\approx\!10$\,m/s both estimates saturate close to
+the offline-identified $\tau_{rc}\!\approx\!56$\,ms and
+$\tau_f\!\approx\!9$\,ms.}
+\label{fig:vsweep}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Final identified values across the velocity sweep
+(mean over second half of run).  True values:
+$m\!=\!1.05$\,kg, $\tau_{rc}\!\approx\!0.056$\,s,
+$\tau_f\!\approx\!0.009$\,s.}
+\label{tab:converged}
+\begin{tabular}{cccc}
+\toprule
+$v_{peak}$ [m/s] & $\hat m$ [kg] & $\hat\tau_{rc}$ [s] & $\hat\tau_f$ [s] \\
+\midrule
+$2.95$  & $1.075$ & $0.145$ & $0.034$ \\
+$5.65$  & $1.090$ & $0.077$ & $0.011$ \\
+$7.80$  & $1.090$ & $0.062$ & $0.009$ \\
+$9.60$  & $1.098$ & $0.058$ & $0.008$ \\
+$10.95$ & $1.104$ & $0.059$ & $0.008$ \\
+$11.61$ & $1.113$ & $0.059$ & $0.009$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pattern is monotone and saturates above
+$v_{peak}\!\approx\!10$\,m/s, exactly as predicted by the
+identifiability analysis:
 \begin{itemize}
-  \item \textbf{v1 (open-loop baseline):} The MHE runs but the
-        injection gate is permanently disabled; the MPCC uses fixed
-        nominal parameters
-        $\vect{\theta}_0=[m_0,\,k_{\tau,0},\,\vect{0}]^\top$.
-  \item \textbf{v2 (closed-loop adaptive):} The full architecture
-        of Algorithm~\ref{alg:main} is active: once
-        $\sigma_k<\sigma_{\mathrm{thr}}$, filtered estimates
-        are injected into the MPCC dynamics~\eqref{eq:mpcc_dyn},
-        and the adaptive progress weight~\eqref{eq:adaptive_ws}
-        modulates $W_s(k)$ online.
+\item $\hat m$ is recovered to within $\pm 6\%$ across the entire
+range; the translational acceleration excites the $f\vect a$
+column of $\Phi$ (eq.~\eqref{eq:regressor}) even at modest
+speed.
+\item $\hat\tau_{rc}$ improves from $0.145$\,s at
+$v\!\approx\!3$\,m/s (a factor $\sim$\,3 off truth) to
+$0.058$\,s at $v\!\approx\!12$\,m/s (within $4\%$ of truth).
+Slow trajectories generate gentle rate commands and the
+RLS-rate residual $\vect\omega_{cmd}-\vect\omega$ is dominated
+by measurement noise.
+\item $\hat\tau_f$ follows the same pattern, from $34$\,ms at
+the slow end to $8\!-\!9$\,ms at the agile end, with the same
+mechanism: low excitation $\Rightarrow$ low signal-to-noise in
+the thrust-loop residual.
 \end{itemize}
+At hover, both actuator estimators would receive essentially
+zero excitation and the translational MHE would be singular by
+Proposition~\ref{prop:hover}.  The sweep thus interpolates the
+two endpoints of the analysis empirically: $v_{peak}\!\to\!0$ is
+non-identifiable, and $v_{peak}\!\gtrsim\!10$ yields all three
+parameters within a few percent of their true values.  The
+rate-loop nominal of $0.030$\,s assumed by the standard NMPC is
+therefore corrected by almost a factor of two once the agile
+regime is reached.
 
-% ─────────────────────── SiL: Mass Mismatch ───────────────────────
-\subsection{SiL~A: MHE Convergence under Mass Mismatch}
-\label{sec:mhe_convergence}
-
-Fig.~\ref{fig:convergence} shows the evolution of the mass estimate
-$\hat{m}_k$, the parametric uncertainty $\sigma_k$, and the adaptive
-weight $W_s(k)$ during a representative v2 flight with 17\% mass
-error.
+\subsection{Online versus offline reconciliation}
+Fig.~\ref{fig:off} contrasts the full-model offline MHE
+(replayed on the same flight log) against the often-used
+\emph{$z$-shortcut} estimator
+\begin{equation}
+\hat m_z(t) \;=\; \frac{T(t)\,(\vect R\vect e_3)_z(t)}{\dot v_z(t)+g}.
+\label{eq:z-shortcut}
+\end{equation}
+The shortcut returns $\hat m_z\approx 1.02$\,kg, a $-3\%$ bias
+relative to the true value, but \emph{assumes} a perfect
+translational model.  The full-model MHE returns
+$\hat m\approx 1.11$\,kg, a $+6\%$ bias, with the honest
+residual attributable to unmodelled horizontal effects.  The
+true mass $1.05$\,kg lies between the two methods.
 
 \begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth]{../figures_mhe_mpcc_sil/v10/10_paper_mhe_Ws.pdf}
-  \caption{MHE convergence during a v2 flight at
-    $v_{\theta,\max}=\SI{10}{m/s}$.
-    \textbf{Top:} mass estimate $\hat{m}_k$ converging to
-    $m_{\mathrm{true}}$ (dashed);
-    the grey band marks the initial 17\% error.
-    \textbf{Bottom:} parametric uncertainty
-    $\sigma_k=\operatorname{tr}(\bar{\mat{P}}_{\theta,k})$ (log scale,
-    left axis) and adaptive progress weight $W_s(k)$ (right axis).
-    The horizontal line indicates $\sigma_{\mathrm{thr}}$.}
-  \label{fig:convergence}
+\centering
+\includegraphics[width=\linewidth]{../results/offline_full_vs_zshortcut.png}
+\caption{Offline mass identification: full-model MHE
+(rigorous, $1.11$\,kg) versus $z$-shortcut (perfect-model
+approximation, $1.02$\,kg).  True mass $1.05$\,kg lies between
+the two methods; the full-model MHE is the only one whose
+residuals are explicit.}
+\label{fig:off}
 \end{figure}
 
-% ─────────────────────── SiL: Ablation ────────────────────────────
-\subsection{SiL~B: Ablation Study}
-\label{sec:ablation}
-
-To isolate the contribution of each component, four configurations
-are compared ($N\!\ge\!10$ runs each, $v_{\theta,\max}=\SI{10}{m/s}$,
-17\% mass error):
+\subsection{Regime study: NMPC closed-loop benefit}
+We test two deployment strategies of the same NMPC controller on
+the same trajectory:
 \begin{itemize}
-  \item[\textbf{A}] MPCC baseline — no MHE, fixed $W_s\!=\!W_{s,\max}$,
-        nominal parameters.
-  \item[\textbf{B}] MHE runs, adaptive $W_s(k)$, but no parameter
-        injection ($\hat{\vect{\theta}}_k$ not sent to MPCC).
-  \item[\textbf{C}] MHE runs, parameter injection active, but
-        $W_s\!=\!W_{s,\max}$ fixed.
-  \item[\textbf{D}] Full architecture (Algorithm~\ref{alg:main}):
-        parameter injection \emph{and} adaptive $W_s(k)$.
+\item[\textbf{A:}] NMPC configured with the \emph{nominal/wrong}
+parameters $(m=0.90,\tau_{rc}=0.030)$;
+\item[\textbf{B:}] NMPC configured with the \emph{identified}
+parameters $(m=1.05,\tau_{rc}=0.056)$.
 \end{itemize}
+Tracking RMSE on the agile run is reported in
+Table~\ref{tab:nmpc}.  The two configurations are
+indistinguishable: the relative difference of $-2.6\%$
+(configuration B nominally worse) is comparable to typical
+run-to-run variation.  The same test repeated with online
+injection (identified parameters updated every $100$\,Hz step)
+yields similar magnitudes.
 
 \begin{table}[t]
 \centering
-\caption{Ablation study: position RMSE (mean$\pm$std over $N$ runs)
-  at $v_{\theta,\max}=\SI{10}{m/s}$ with 17\% mass error.}
-\label{tab:ablation}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clcccc@{}}
+\caption{Tracking RMSE [m] of the NMPC closed loop with nominal
+versus identified parameters, on the agile run.}
+\label{tab:nmpc}
+\begin{tabular}{lcc}
 \toprule
- & \textbf{Config} & \textbf{MHE} & $\hat{\vect{\theta}}\!\to$\textbf{MPCC}
- & \textbf{Adp.\ $W_s$} & \textbf{RMSE [m]} \\
+Configuration & RMSE [m] & QP fail rate \\
 \midrule
-A & Baseline       & \ding{55} & \ding{55} & \ding{55} & $\square$ \\
-B & + adapt.\ $W_s$  & \ding{51} & \ding{55} & \ding{51} & $\square$ \\
-C & + param.\ inj.   & \ding{51} & \ding{51} & \ding{55} & $\square$ \\
-D & Full (ours)       & \ding{51} & \ding{51} & \ding{51} & $\square$ \\
+A: Nominal $(m=0.90,\tau_{rc}=0.030)$    & $0.642$ & $0.0\%$ \\
+B: Identified $(m=1.05,\tau_{rc}=0.056)$ & $0.659$ & $0.0\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:ablation} reports the position RMSE for each
-configuration.
-\textbf{[TODO: fill table and write analysis once N$\ge$10 runs are
-collected for each configuration.]}
+The empirical conclusion is unambiguous: in this fast-feedback
+regime, correcting the model parameters does not measurably
+alter the closed-loop tracking.  The $100$\,Hz feedback absorbs
+the model mismatch within its own bandwidth, and the residual
+error is dominated by trajectory dynamics rather than model
+bias.  Section~\ref{sec:discussion} discusses the regimes in
+which the identification would matter.
 
-% ─────────────────────── SiL: Tracking v1 vs v2 ──────────────────
-\subsection{SiL~C: Tracking Performance}
-\label{sec:comparison}
+\subsection{Computational budget}\label{sec:budget}
+On an Intel i7-class CPU running Ubuntu 22.04, the translational
+MHE (acados SQP\_RTI on $10$ states, $N=31$ shooting nodes)
+solves in $\sim$\,1.7\,ms per step, the two RLS updates are
+negligible (a handful of scalar operations each), and the NMPC
+itself runs in $\sim$\,2\,ms.  The full parameter-estimation
+pipeline thus consumes well under $4$\,ms per step, leaving
+ample headroom inside the $10$\,ms control period.
 
-Fig.~\ref{fig:error_comparison} shows the position error over
-arc-length for v1 (open-loop) and v2 (closed-loop adaptive).
+\subsection{Comparison with a monolithic full-state MHE}
+For completeness we re-implemented a $21$-D full-state MHE
+following~\cite{liu2023nonlinear} on the same flight data, with
+the Lie-invariant arrival cost and the
+$\sqrt{\|\vect q_v\|^2+\epsilon}$ numerical fix for the log-map
+Jacobian~\cite{forster2015imu}.  The full-state QP failed on
+$99.2\%$ of the steps over $63$\,s, returning
+\texttt{ACADOS\_MINSTEP}.  The corresponding mass estimate, when
+a fallback rule re-injected the previous mass on failure,
+slowly drifted to a meaningless saturated value.  By contrast,
+the $10$-D reduced MHE proposed here succeeds on $100\%$ of the
+steps on the same data.  This is, to our knowledge, the first
+quantitative documentation of this failure mode and its
+state-space remedy.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth]{../figures_mhe_comparison/v10/02_position_error_comparison.pdf}
-  \caption{Position error vs.\ arc-length $\theta$ for v1 (open-loop,
-    dashed) and v2 (adaptive, solid).
-    The shaded region highlights the error reduction after MHE
-    convergence.}
-  \label{fig:error_comparison}
-\end{figure}
+% ════════════════════ DISCUSSION ════════════════════
+\section{Discussion}\label{sec:discussion}
 
-Fig.~\ref{fig:trajectories} overlays the XY and XZ projections of
-both flights against the reference path.
+\subsection{Why the $5\%$ mass residual is not aerodynamic drag}
+Quadratic drag, $-c_{drag}\vect v\|\vect v\|$, added to
+\eqref{eq:dv-t} moves $\hat m$ in the wrong direction (toward
+$0.95$\,kg) and inflates its dispersion; a negative $c_{drag}$
+would be required to absorb the bias, which is unphysical.  The
+residual is therefore not predominantly aerodynamic.  We
+attribute it to (i)~thrust-mapping nonlinearity during fast
+transients, (ii)~node-level discretisation of a jerky thrust
+command, and (iii)~unmodelled rotor wake / motor coupling
+effects that scale sub-linearly with~$\|\vect v\|$.  Modelling
+these explicitly would require a higher-fidelity dynamic model
+and is left to future work.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth]{../figures_mhe_comparison/v10/03_trajectories_comparison.pdf}
-  \caption{XY and XZ trajectory projections for v1 (open-loop),
-    v2 (adaptive), and the reference path.}
-  \label{fig:trajectories}
-\end{figure}
+\subsection{Why $\tau_f$ is sub-loop, and when to compensate}
+With $\hat\tau_f\approx 9$\,ms and a $100$\,Hz control loop
+($\dt=10$\,ms), the thrust actuator settles in one sample and is
+invisible to the controller.  We tested a feed-forward
+compensation
+\[
+T_{applied} \;=\; T_{des} + \tau_f\,\dot T_{des}
+\]
+on the closed-loop NMPC and observed a $-3.5\%$ tracking-RMSE
+change (i.e., slightly worse), because the differentiation
+amplifies the jerky thrust command.  The compensation is only
+beneficial when the control bandwidth approaches $1/\tau_f$,
+which would happen at $\sim$\,200--500\,Hz.  Identifying $\tau_f$
+thus serves a \emph{bandwidth-planning} purpose: it provides the
+maximum useful control rate, even if the present $100$\,Hz NMPC
+does not benefit.
 
-% ─────────────────────── SiL: Wind Disturbances ──────────────────
-\subsection{SiL~D: Wind Disturbance Rejection}
-\label{sec:wind}
+\subsection{Connection to INDI}
+The natural consumer of $\hat\tau_{rc}$ is incremental nonlinear
+dynamic inversion~\cite{smeur2016adaptive,sun2022comparative},
+whose stability hinges on a correct estimate of the rotational
+control effectiveness.  In INDI, $\tau_{rc}$ enters the inverse
+command directly, and the $-46\%$ nominal bias measured here
+would translate into a stability-margin loss of comparable
+magnitude.  We therefore see the RLS-rate identification
+proposed here as a drop-in module for INDI controllers, where
+the benefit would not be obscured by the feedback dominance of
+NMPC.
 
-Table~\ref{tab:wind} compares v1 and v2 under the three wind
-profiles described in Section~\ref{sec:setup}.
-\textbf{[TODO: fill once wind experiments are executed.]}
+\subsection{Methodological lesson: do not estimate the measured}
+The single most impactful design choice in this paper is the
+removal of the quaternion from the MHE state.  This is not a
+clever trick but a recognition of an obvious fact: the attitude
+is already measured by the IMU/odometry, the controller does not
+consume the MHE's filtered version (raw odometry feeds the
+NMPC), and the long-window quaternion integration is the single
+most fragile element of the QP.  Estimating only the
+\emph{unmeasured} parameters and feeding the measured kinematics
+as inputs converts a fragile $\sim$\,21-D nonlinear MHE into a
+robust $10$-D one.
 
-\begin{table}[t]
-\centering
-\caption{Tracking performance under wind disturbances
-  ($v_{\theta,\max}=\SI{10}{m/s}$, 17\% mass error,
-  mean$\pm$std over $N$ runs).}
-\label{tab:wind}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Wind profile}
-  & \textbf{v1 RMSE [m]}
-  & \textbf{v2 RMSE [m]}
-  & \textbf{Improv.} \\
-\midrule
-No wind (baseline)  & $\square$ & $\square$ & $\square$ \\
-Constant            & $\square$ & $\square$ & $\square$ \\
-Gust                & $\square$ & $\square$ & $\square$ \\
-Turbulence          & $\square$ & $\square$ & $\square$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Limitations}
+\paragraph*{Simulation-only validation}
+The experimental validation is conducted entirely in MuJoCo
+with sensor-noise injection.  The identifiability analysis, the
+multi-rate architecture and the numerical remedy of the
+quaternion-state fragility are platform-independent and would
+transfer to hardware unchanged.  The specific bias values, on
+the other hand, are MuJoCo-specific; a hardware experiment would
+recover different values for $(m,\tau_{rc},\tau_f)$ but the
+methodology is unaffected.  Hardware validation is left to
+future work.
+\paragraph*{Inertia not identified}
+Body inertia $\mat J$ does not appear in our model because the
+inner-loop rate controller already absorbs it.  Identifying
+$\mat J$ would require opening the inner loop or adding moment
+measurements and is beyond the scope of this paper.
+\paragraph*{Excitation budget}
+The agile Lissajous used here provides ample excitation.  In
+applications where the trajectory is dictated externally
+(e.g., hovering payload delivery) the controller must inject
+excitation explicitly; designing such excitation signals under
+safety constraints is a known open
+problem~\cite{wuest2019online}.
 
-Fig.~\ref{fig:wind_dhat} shows the disturbance estimate
-$\hat{\vect{d}}_k$ versus the true applied force (normalised by
-mass) for a representative constant-wind flight.
-\textbf{[TODO: generate figure once wind experiments are executed.]}
+% ════════════════════ CONCLUSION ════════════════════
+\section{Conclusion}\label{sec:conclusion}
 
-\begin{figure}[t]
-  \centering
-  %\includegraphics[width=\columnwidth]{../figures_mhe_wind/dhat_vs_real.pdf}
-  \fbox{\parbox{0.95\columnwidth}{\centering\vspace{2cm}
-    \textbf{Placeholder:} $\hat{\vect{d}}_k$ vs.\ true disturbance
-    under constant wind.\vspace{2cm}}}
-  \caption{Disturbance estimation under constant wind.
-    \textbf{Top:} true external acceleration (dashed) and
-    MHE estimate $\hat{\vect{d}}_k$ (solid).
-    \textbf{Bottom:} estimation error $\norm{\vect{d}-\hat{\vect{d}}}$.}
-  \label{fig:wind_dhat}
-\end{figure}
+This paper has presented an observability-aware multi-rate
+estimator that recovers the quadrotor mass and the actuator
+time constants $(m,\tau_{rc},\tau_f)$ on-line from in-flight
+data.  A closed-form identifiability analysis predicts and
+quantifies the agile-flight excitation needed for the
+translational parameters to become recoverable.  A decoupled
+multi-rate architecture estimates each parameter at the time
+scale and on the equation where it is identifiable: a $10$-D
+translational MHE at $33$\,Hz for $m$ and $\vect d$, and two
+RLS estimators at $100$\,Hz for $\tau_{rc}$ and $\tau_f$.  The
+resulting pipeline solves the underlying QP on $100\%$ of the
+steps over $63$\,s of agile flight, with a per-step
+parameter-estimation cost below $4$\,ms.
 
-% ─────────────────────── Hardware ─────────────────────────────────
-\subsection{Hardware Experiments}
-\label{sec:hardware}
+A simulation-based regime study on a MuJoCo high-fidelity
+simulator quantifies the actual gap between nominal and
+identified parameters: the rate-loop time constant is
+corrected by almost a factor of two, the mass by $\approx 5\%$,
+and the thrust constant by an order of magnitude.  In the
+fast-feedback regime of a $100$\,Hz NMPC the identification's
+value lies in model fidelity (commissioning, digital-twin
+calibration) rather than in direct tracking gain; in
+INDI-style and faster-bandwidth controllers, where the
+parameters enter the control law directly, the benefit would
+be commensurate with the bias corrected.
 
-The MHE--MPCC architecture is deployed on a physical quadrotor
-using the same software stack as in SiL
-(Section~\ref{sec:setup}).
-A payload is attached to introduce a mass mismatch comparable to
-the SiL scenario.
+Future work includes hardware validation on a physical
+platform and integration of $\hat\tau_{rc}$ into an INDI rate
+controller.
 
-Table~\ref{tab:hw_results} reports the tracking performance
-over $N\!\ge\!5$ flights.
-\textbf{[TODO: fill once hardware experiments are completed.]}
+% ════════════════════ REFERENCES ════════════════════
+\begin{thebibliography}{99}
 
-\begin{table}[t]
-\centering
-\caption{Hardware tracking performance
-  ($v_{\theta,\max}=\SI{10}{m/s}$, payload-induced mass mismatch,
-  mean$\pm$std over $N$ runs).}
-\label{tab:hw_results}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Metric}
-  & \textbf{v1 (open-loop)}
-  & \textbf{v2 (adaptive)} \\
-\midrule
-Position RMSE [m]       & $\square$ & $\square$ \\
-Max position error [m]  & $\square$ & $\square$ \\
-$\hat{m}$ converged [kg] & ---     & $\square$ \\
-Completion rate         & $\square$ & $\square$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+\bibitem{hanover2024autonomous}
+D.~Hanover \emph{et al.},
+``Autonomous Drone Racing: A Survey,''
+\emph{IEEE Trans.\ Robotics}, vol.~40, pp.~3044--3067, 2024.
 
-Fig.~\ref{fig:hw_trajectory} shows the recorded trajectory from a
-representative hardware flight.
-\textbf{[TODO: generate figure from hardware CSV data.]}
-
-\begin{figure}[t]
-  \centering
-  %\includegraphics[width=\columnwidth]{../figures_hw/trajectory_hw.pdf}
-  \fbox{\parbox{0.95\columnwidth}{\centering\vspace{2cm}
-    \textbf{Placeholder:} hardware XY/XZ trajectory
-    (v1 vs.\ v2 vs.\ reference).\vspace{2cm}}}
-  \caption{Hardware flight trajectory: v1 (open-loop), v2 (adaptive),
-    and reference path.}
-  \label{fig:hw_trajectory}
-\end{figure}
-
-% ─────────────────────── Computational Budget ────────────────────
-\subsection{Computational Budget}
-\label{sec:timing}
-
-Table~\ref{tab:timing} reports the solver timing statistics.
-\textbf{[TODO: update timing values from final experimental data.]}
-
-\begin{table}[t]
-\centering
-\caption{Solver timing statistics (Intel Core i7, single-threaded).
-  Budget: \SI{10}{ms} per step at \SI{100}{\hertz}.}
-\label{tab:timing}
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Component} & \textbf{Mean [ms]} & \textbf{Peak [ms]} \\
-\midrule
-MPCC (SQP-RTI, $N\!=\!50$)   & $\square$  & $\square$  \\
-MHE (SQP-RTI, $N_e\!=\!20$)  & $\square$  & $\square$  \\
-MPCC + MHE combined           & $\square$  & ---    \\
-Full loop                     & $\square$  & $\square$  \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth]{../figures_mhe_mpcc_sil/v10/09_timing.pdf}
-  \caption{Per-step solve time for the MPCC, MHE, and full control
-    loop during a v2 flight.
-    The dashed horizontal line marks the \SI{10}{ms} real-time
-    deadline.}
-  \label{fig:timing}
-\end{figure}
-
-% ─────────────────────── Discussion ──────────────────────────────
-\subsection{Discussion}
-
-\textbf{[TODO: rewrite discussion once all experimental data
-(ablation, wind, hardware) are available.
-Key points to address:
-(1)~ablation: which component contributes most;
-(2)~wind: $\hat{\vect{d}}$ captures perturbations in real time;
-(3)~hardware: SiL results transfer to physical platform;
-(4)~comparison with L1-adaptive approach.]}
-
-% ══════════════════════ VII. CONCLUSION ════════════════════
-\section{Conclusion}
-\label{sec:conclusion}
-
-We presented a closed-loop architecture coupling a Lie-invariant
-MHE with an adaptive MPCC for agile quadrotor path following
-under parametric uncertainty.
-The MHE jointly estimates mass, actuator lag, and translational
-disturbance acceleration at \SI{100}{\hertz}, and the posterior
-covariance drives an adaptive progress weight that modulates
-controller aggressiveness without manual intervention.
-SiL experiments with mass mismatch and wind disturbances, together
-with hardware flights on a physical quadrotor, demonstrate
-consistent tracking improvements over a fixed-model baseline
-without offline calibration or gain re-tuning.
-Future work will explore multi-run Monte Carlo campaigns across
-a wider range of flight speeds and disturbance magnitudes, and
-investigate code-generation optimisations to reduce the
-computational budget on embedded platforms.
-
-
-% ═══════════════════════ REFERENCES ════════════════════════
-\bibliographystyle{IEEEtran}
-
-\begin{thebibliography}{10}
-
-\bibitem{kamel2017linear}
-M.~Kamel, M.~Burri, and R.~Siegwart,
-``Linear vs Nonlinear {MPC} for Trajectory Tracking Applied to Rotary Wing Micro Aerial Vehicles,''
-\textit{IFAC-PapersOnLine}, vol.~50, no.~1, pp.~3463--3469, 2017.
-
-\bibitem{falanga2022embedded}
-D.~Falanga, P.~Foehn, P.~Lu, and D.~Scaramuzza,
-``Embedded Fast Nonlinear Model Predictive Control for Micro Aerial Vehicles,''
-\textit{J. Intell. Robot. Syst.}, vol.~106, no.~1, pp.~1--17, 2022.
-
-\bibitem{romero2022mpcc}
-A.~Romero, S.~Sun, P.~Foehn, and D.~Scaramuzza,
+\bibitem{romero2022model}
+A.~Romero, S.~Sun, P.~Foehn, D.~Scaramuzza,
 ``Model Predictive Contouring Control for Time-Optimal Quadrotor Flight,''
-\textit{IEEE Trans. Robot.}, vol.~38, no.~6, pp.~3340--3356, 2022.
+\emph{IEEE Trans.\ Robotics}, vol.~38, no.~6, pp.~3340--3356, 2022.
 
-\bibitem{krinner2024mpccpp}
-L.~Krinner, A.~Romero, L.~Bauersfeld, M.~N.~Zeilinger, A.~Carron, and D.~Scaramuzza,
-``{MPCC++}: Model Predictive Contouring Control for Time-Optimal Flight
-with Safety Constraints,''
-in \textit{Proc. Robotics: Science and Systems (RSS)}, 2024.
+\bibitem{foehn2021time}
+P.~Foehn \emph{et al.},
+``Time-Optimal Planning for Quadrotor Waypoint Flight,''
+\emph{Science Robotics}, vol.~6, no.~56, eabh1221, 2021.
 
-\bibitem{hanover2022performance}
-D.~Hanover, P.~Foehn, S.~Sun, E.~Kaufmann, and D.~Scaramuzza,
-``Performance, Precision, and Payloads: Adaptive Nonlinear {MPC} for Quadrotors,''
-\textit{IEEE Robot. Autom. Lett.}, vol.~7, no.~2, pp.~690--697, 2022.
+\bibitem{smeur2016adaptive}
+E.~Smeur, Q.~Chu, G.~de Croon,
+``Adaptive Incremental Nonlinear Dynamic Inversion for Attitude Control of Micro Air Vehicles,''
+\emph{J.\ Guid.\ Control Dyn.}, vol.~39, no.~3, pp.~450--461, 2016.
+
+\bibitem{sun2022comparative}
+S.~Sun, A.~Romero, P.~Foehn, E.~Kaufmann, D.~Scaramuzza,
+``A Comparative Study of Nonlinear MPC and Differential-Flatness-Based Control for Quadrotor Agile Flight,''
+\emph{IEEE Trans.\ Robotics}, vol.~38, no.~6, pp.~3357--3373, 2022.
 
 \bibitem{torrente2021data}
-G.~Torrente, E.~Kaufmann, P.~Foehn, and D.~Scaramuzza,
-``Data-Driven {MPC} for Quadrotors,''
-\textit{IEEE Robot. Autom. Lett.}, vol.~6, no.~2, pp.~3769--3776, 2021.
+G.~Torrente, E.~Kaufmann, P.~Foehn, D.~Scaramuzza,
+``Data-Driven MPC for Quadrotors,''
+\emph{IEEE Robotics Autom.\ Lett.}, vol.~6, no.~2, pp.~3769--3776, 2021.
 
-\bibitem{wang2024neuromhe}
-B.~Wang, Z.~Ma, S.~Lai, and L.~Zhao,
-``Neural Moving Horizon Estimation for Robust Flight Control,''
-\textit{IEEE Trans. Robot.}, vol.~40, pp.~639--659, 2024.
+\bibitem{nguyen2020model}
+H.~Nguyen, M.~Kamel, K.~Alexis,
+``Model Predictive Control for Micro Aerial Vehicles: A Survey,''
+\emph{IEEE Control Syst.\ Mag.}, vol.~40, no.~3, pp.~33--64, 2020.
 
-\bibitem{choo2023data}
-W.~Choo and E.~Kayacan,
-``Data-Based {MHE} for Agile Quadrotor Flight,''
-in \textit{Proc. IEEE/RSJ Int. Conf. Intell. Robots Syst. (IROS)}, 2023.
+\bibitem{liu2023nonlinear}
+M.~Liu, Y.~Tan, I.~Mareels,
+``Nonlinear Moving Horizon Estimation for Quadrotor System Identification,''
+\emph{Control Eng.\ Practice}, vol.~135, art.~no.~105508, 2023.
 
-\bibitem{eschmann2024data}
-J.~Eschmann, D.~Albani, and G.~Loianno,
-``Data-Driven System Identification of Quadrotors Subject to Motor Delays,''
-in \textit{Proc. IEEE/RSJ Int. Conf. Intell. Robots Syst. (IROS)}, 2024.
+\bibitem{kabzan2019learning}
+J.~Kabzan, L.~Hewing, A.~Liniger, M.~Zeilinger,
+``Learning-Based Model Predictive Control for Autonomous Racing,''
+\emph{IEEE Robotics Autom.\ Lett.}, vol.~4, no.~4, pp.~3363--3370, 2019.
 
-\bibitem{fan2025efficient}
-D.~Fan and D.~A.~Copp,
-``Efficient Estimation of Relaxed Model Parameters for Robust {UAV} Trajectory Optimization,''
-in \textit{Proc. IEEE Conf. Technol. Sustainability (SusTech)}, 2025.
+\bibitem{burri2018system}
+M.~Burri \emph{et al.},
+``A Framework for Maximum Likelihood Parameter Identification Applied on MAVs,''
+\emph{J.\ Field Robotics}, vol.~35, no.~1, pp.~5--22, 2018.
 
-\bibitem{zhang2025dual}
-Y.~Zhang, Z.~Wang, and M.~Classes,
-``Dual-channel adaptive nonlinear model predictive control for quadrotor under
-instantaneous impact and payload disturbances,''
-\textit{arXiv preprint arXiv:2507.15261}, 2025.
+\bibitem{wuest2019online}
+V.~W\"uest, V.~Kumar, G.~Loianno,
+``Online Estimation of Geometric and Inertia Parameters for Multirotor Aerial Vehicles,''
+in \emph{IEEE ICRA}, 2019, pp.~1884--1890.
 
-\bibitem{gupta2025lolnmpc}
-P.~M.~Gupta \textit{et al.},
-``{LoL-NMPC}: Low-Level Dynamics Integration in Nonlinear Model Predictive Control for {UAVs},''
-\textit{arXiv:2506.02169}, 2025.
-
-\bibitem{torshizi2025contextual}
-K.~Torshizi \textit{et al.},
-``Contextual Neural Moving Horizon Estimation for Robust Quadrotor Control,''
-\textit{arXiv:2509.24281}, 2025.
+\bibitem{bauersfeld2021neurobem}
+L.~Bauersfeld, E.~Kaufmann, P.~Foehn, S.~Sun, D.~Scaramuzza,
+``NeuroBEM: Hybrid Aerodynamic Quadrotor Model,''
+in \emph{Robotics: Science and Systems}, 2021.
 
 \bibitem{verschueren2022acados}
-R.~Verschueren \textit{et al.},
-``acados---A Modular Open-Source Framework for Fast Embedded Optimal Control,''
-\textit{Math. Program. Comput.}, vol.~14, pp.~147--183, 2022.
+R.~Verschueren \emph{et al.},
+``acados---a modular open-source framework for fast embedded optimal control,''
+\emph{Math.\ Program.\ Comput.}, vol.~14, no.~1, pp.~147--183, 2022.
 
-\bibitem{andersson2019casadi}
-J.~A.~E.~Andersson \textit{et al.},
-``{CasADi}: A Software Framework for Nonlinear Optimization and Optimal Control,''
-\textit{Math. Program. Comput.}, vol.~11, no.~1, pp.~1--36, 2019.
+\bibitem{forster2015imu}
+C.~Forster, L.~Carlone, F.~Dellaert, D.~Scaramuzza,
+``IMU Preintegration on Manifold for Efficient Visual-Inertial Maximum-a-Posteriori Estimation,''
+in \emph{Robotics: Science and Systems}, 2015.
+
+\bibitem{todorov2012mujoco}
+E.~Todorov, T.~Erez, Y.~Tassa,
+``MuJoCo: A physics engine for model-based control,''
+in \emph{IEEE/RSJ IROS}, 2012, pp.~5026--5033.
 
 \end{thebibliography}
-
-
-
-
-\vfill
 
 \end{document}

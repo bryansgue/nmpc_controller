@@ -29,6 +29,8 @@ set(ACADOS_LIB_DIR     ${ACADOS_DIR}/lib)
 find_package(ament_cmake QUIET)
 find_package(rclcpp QUIET)
 find_package(nav_msgs QUIET)
+find_package(sensor_msgs QUIET)
+find_package(mujoco_ros_utils QUIET)
 find_package(std_msgs QUIET)
 find_package(std_srvs QUIET)
 find_package(geometry_msgs QUIET)
@@ -75,7 +77,7 @@ if(HAS_ROS2)
         quadrotor_common
     )
     ament_target_dependencies(mujoco_interface PUBLIC
-        rclcpp nav_msgs std_msgs std_srvs geometry_msgs quadrotor_msgs
+        rclcpp nav_msgs sensor_msgs mujoco_ros_utils std_msgs std_srvs geometry_msgs quadrotor_msgs
     )
 endif()
 
@@ -228,10 +230,103 @@ else()
     message(STATUS "MHE generated code NOT found — run ocp_generation/generate_mhe_ocp.py first")
 endif()
 
+# ── Translational-only MHE solver (10D, no quaternion) ───────────────────────
+set(MHE_TRANS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/c_generated_code_mhe_trans)
+if(EXISTS ${MHE_TRANS_DIR}/acados_solver_quadrotor_mhe_trans.c)
+    file(GLOB MHE_TRANS_MODEL  ${MHE_TRANS_DIR}/quadrotor_mhe_trans_model/*.c)
+    file(GLOB MHE_TRANS_COST   ${MHE_TRANS_DIR}/quadrotor_mhe_trans_cost/*.c)
+    file(GLOB MHE_TRANS_CONSTR ${MHE_TRANS_DIR}/quadrotor_mhe_trans_constraints/*.c)
+    add_library(mhe_trans_solver STATIC
+        ${MHE_TRANS_DIR}/acados_solver_quadrotor_mhe_trans.c
+        ${MHE_TRANS_MODEL} ${MHE_TRANS_COST} ${MHE_TRANS_CONSTR})
+    target_include_directories(mhe_trans_solver PUBLIC
+        ${MHE_TRANS_DIR} ${ACADOS_INCLUDE_DIR} ${ACADOS_INCLUDE_DIR}/acados
+        ${ACADOS_INCLUDE_DIR}/blasfeo/include ${ACADOS_INCLUDE_DIR}/hpipm/include)
+    target_link_libraries(mhe_trans_solver PUBLIC
+        ${ACADOS_LIB_DIR}/libacados.so ${ACADOS_LIB_DIR}/libblasfeo.so ${ACADOS_LIB_DIR}/libhpipm.so m)
+    add_executable(mhe_trans_replay src/mhe/mhe_trans_replay.cpp src/mhe/mhe_trans_controller.cpp)
+    target_link_libraries(mhe_trans_replay quadrotor_common mhe_trans_solver)
+    message(STATUS "mhe_trans (translational-only) configured")
+endif()
+
+# ── NMPC-MHE solver (18D, thrust-as-input) ────────────────────────────────────
+set(MHE_NMPC_CODEGEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/c_generated_code_mhe_nmpc)
+if(EXISTS ${MHE_NMPC_CODEGEN_DIR}/acados_solver_quadrotor_mhe_nmpc.c)
+    message(STATUS "NMPC-MHE generated code found at ${MHE_NMPC_CODEGEN_DIR}")
+
+    file(GLOB MHE_NMPC_MODEL_SRC  ${MHE_NMPC_CODEGEN_DIR}/quadrotor_mhe_nmpc_model/*.c)
+    file(GLOB MHE_NMPC_COST_SRC   ${MHE_NMPC_CODEGEN_DIR}/quadrotor_mhe_nmpc_cost/*.c)
+    file(GLOB MHE_NMPC_CONSTR_SRC ${MHE_NMPC_CODEGEN_DIR}/quadrotor_mhe_nmpc_constraints/*.c)
+
+    add_library(mhe_nmpc_solver STATIC
+        ${MHE_NMPC_CODEGEN_DIR}/acados_solver_quadrotor_mhe_nmpc.c
+        ${MHE_NMPC_MODEL_SRC}
+        ${MHE_NMPC_COST_SRC}
+        ${MHE_NMPC_CONSTR_SRC}
+    )
+    target_include_directories(mhe_nmpc_solver PUBLIC
+        ${MHE_NMPC_CODEGEN_DIR}
+        ${ACADOS_INCLUDE_DIR}
+        ${ACADOS_INCLUDE_DIR}/acados
+        ${ACADOS_INCLUDE_DIR}/blasfeo/include
+        ${ACADOS_INCLUDE_DIR}/hpipm/include
+    )
+    target_link_libraries(mhe_nmpc_solver PUBLIC
+        ${ACADOS_LIB_DIR}/libacados.so
+        ${ACADOS_LIB_DIR}/libblasfeo.so
+        ${ACADOS_LIB_DIR}/libhpipm.so
+        m
+    )
+
+    # ── Standalone 18D-MHE test (no ROS2/MuJoCo) ─────────────────────
+    add_executable(mhe_nmpc_test
+        src/mhe/mhe_nmpc_test.cpp
+        src/mhe/mhe_nmpc_controller.cpp
+    )
+    target_link_libraries(mhe_nmpc_test
+        quadrotor_common
+        mhe_nmpc_solver
+    )
+
+    # ── Offline MHE replay on real recorded data (no ROS2/MuJoCo) ────
+    add_executable(mhe_replay
+        src/mhe/mhe_replay.cpp
+        src/mhe/mhe_nmpc_controller.cpp
+    )
+    target_link_libraries(mhe_replay
+        quadrotor_common
+        mhe_nmpc_solver
+    )
+
+    # ── NMPC-MHE adaptive SiL (needs NMPC + 18D-MHE solvers) ─────────
+    if(HAS_ROS2 AND TARGET nmpc_solver)
+        add_executable(nmpc_mhe_sil
+            src/nmpc/nmpc_mhe_sil.cpp
+            src/nmpc/nmpc_controller.cpp
+            src/mhe/mhe_trans_controller.cpp
+        )
+        target_link_libraries(nmpc_mhe_sil
+            quadrotor_common
+            quadrotor_trajectory
+            nmpc_solver
+            mhe_trans_solver
+            mujoco_interface
+        )
+        ament_target_dependencies(nmpc_mhe_sil
+            rclcpp nav_msgs sensor_msgs mujoco_ros_utils std_msgs std_srvs geometry_msgs quadrotor_msgs
+        )
+        message(STATUS "nmpc_mhe_sil target configured")
+    else()
+        message(STATUS "nmpc_mhe_sil: skipped (needs ROS2 + nmpc_solver)")
+    endif()
+else()
+    message(STATUS "NMPC-MHE generated code NOT found — run ocp_generation/generate_mhe_nmpc_ocp.py first")
+endif()
+
 # ── Install targets (for colcon) ─────────────────────────────────────────────
 if(ament_cmake_FOUND)
     set(_install_targets "")
-    foreach(_t nmpc_sil nmpc_sim mhe_mpcc_sil)
+    foreach(_t nmpc_sil nmpc_sim mhe_mpcc_sil nmpc_mhe_sil)
         if(TARGET ${_t})
             list(APPEND _install_targets ${_t})
         endif()

@@ -36,6 +36,11 @@ public:
     void set_weights(const Vec3& Q_pos, const Vec3& Q_att,
                      const Eigen::Vector4d& R_u);
 
+    /// Set adaptive model parameters (injected into the dynamics + cost).
+    /// m_hat: estimated mass [kg], d_hat: disturbance accel [m/s²],
+    /// k_tau: estimated 1/τ_rc [1/s]. Applied on the next set_reference() calls.
+    void set_model_params(double m_hat, const Vec3& d_hat, double k_tau);
+
     /// Solve the OCP. Returns acados status (0 = success).
     int solve();
 
@@ -56,7 +61,7 @@ public:
     static const int N;
     static constexpr int NX = 13;
     static constexpr int NU = 4;
-    static constexpr int NP = 17;
+    static constexpr int NP = 22;
 
 private:
     quadrotor_nmpc_solver_capsule* capsule_ = nullptr;
@@ -66,7 +71,12 @@ private:
     Vec3 Q_att_ = Vec3(5.0, 5.0, 5.0);
     Eigen::Vector4d R_u_ = Eigen::Vector4d(0.1, 0.3, 0.3, 0.3);
 
-    /// Build the 17-element parameter vector for a given stage
+    // Cached adaptive model parameters (default = nominal)
+    double m_hat_ = 1.08;            // [kg]
+    Vec3   d_hat_ = Vec3::Zero();    // [m/s²]
+    double k_tau_ = 1.0 / 0.03;      // [1/s]
+
+    /// Build the 22-element parameter vector for a given stage
     void build_params(double* p, const Vec3& p_ref, const Quat4& q_ref) const;
 };
 

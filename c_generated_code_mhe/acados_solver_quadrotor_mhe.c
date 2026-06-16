@@ -352,6 +352,8 @@ void quadrotor_mhe_acados_create_setup_functions(quadrotor_mhe_solver_capsule* c
             MAP_CASADI_FNC(expl_vde_forw[i], quadrotor_mhe_expl_vde_forw);
         }
 
+        
+
         capsule->expl_ode_fun = (external_function_external_param_casadi *) malloc(sizeof(external_function_external_param_casadi)*N);
         for (int i = 0; i < N; i++) {
             MAP_CASADI_FNC(expl_ode_fun[i], quadrotor_mhe_expl_ode_fun);
@@ -517,6 +519,7 @@ void quadrotor_mhe_acados_setup_nlp_in(quadrotor_mhe_solver_capsule* capsule, co
     for (int i = 0; i < N; i++)
     {
         ocp_nlp_dynamics_model_set_external_param_fun(nlp_config, nlp_dims, nlp_in, i, "expl_vde_forw", &capsule->expl_vde_forw[i]);
+        
         ocp_nlp_dynamics_model_set_external_param_fun(nlp_config, nlp_dims, nlp_in, i, "expl_ode_fun", &capsule->expl_ode_fun[i]);
         ocp_nlp_dynamics_model_set_external_param_fun(nlp_config, nlp_dims, nlp_in, i, "expl_vde_adj", &capsule->expl_vde_adj[i]);
     }
@@ -1107,11 +1110,13 @@ int quadrotor_mhe_acados_free(quadrotor_mhe_solver_capsule* capsule)
     for (int i = 0; i < N; i++)
     {
         external_function_external_param_casadi_free(&capsule->expl_vde_forw[i]);
+        
         external_function_external_param_casadi_free(&capsule->expl_ode_fun[i]);
         external_function_external_param_casadi_free(&capsule->expl_vde_adj[i]);
     }
     free(capsule->expl_vde_adj);
     free(capsule->expl_vde_forw);
+    
     free(capsule->expl_ode_fun);
 
     // cost

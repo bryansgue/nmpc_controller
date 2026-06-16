@@ -43,12 +43,15 @@ void NmpcController::set_x0(const State13& x0) {
 }
 
 void NmpcController::build_params(double* p, const Vec3& p_ref, const Quat4& q_ref) const {
-    // p = [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4)]  → 17
+    // p = [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), m̂(1), d̂(3), k̂_τ(1)]  → 22
     p[0]  = p_ref(0);  p[1]  = p_ref(1);  p[2]  = p_ref(2);
     p[3]  = q_ref(0);  p[4]  = q_ref(1);  p[5]  = q_ref(2);  p[6]  = q_ref(3);
     p[7]  = Q_pos_(0); p[8]  = Q_pos_(1); p[9]  = Q_pos_(2);
     p[10] = Q_att_(0); p[11] = Q_att_(1); p[12] = Q_att_(2);
     p[13] = R_u_(0);   p[14] = R_u_(1);   p[15] = R_u_(2);   p[16] = R_u_(3);
+    p[17] = m_hat_;
+    p[18] = d_hat_(0); p[19] = d_hat_(1); p[20] = d_hat_(2);
+    p[21] = k_tau_;
 }
 
 void NmpcController::set_reference(int k, const Vec3& p_ref, const Quat4& q_ref) {
@@ -68,6 +71,12 @@ void NmpcController::set_weights(const Vec3& Q_pos, const Vec3& Q_att,
     Q_pos_ = Q_pos;
     Q_att_ = Q_att;
     R_u_   = R_u;
+}
+
+void NmpcController::set_model_params(double m_hat, const Vec3& d_hat, double k_tau) {
+    m_hat_ = m_hat;
+    d_hat_ = d_hat;
+    k_tau_ = k_tau;
 }
 
 int NmpcController::solve() {

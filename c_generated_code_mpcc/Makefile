@@ -32,8 +32,6 @@
 
 
 
-
-
 # define sources and use make's implicit rules to generate object files (*.o)
 
 # model
@@ -159,7 +157,7 @@ ocp_cython_o: ocp_cython_c
 	-I $(INCLUDE_PATH)/blasfeo/include/ \
 	-I $(INCLUDE_PATH)/hpipm/include/ \
 	-I $(INCLUDE_PATH) \
-	-I /home/bryansgue/.local/lib/python3.10/site-packages/numpy/_core/include \
+	-I /home/bryansgue/.local/lib/python3.10/site-packages/numpy/core/include \
 	-I /usr/include/python3.10 \
 	acados_ocp_solver_pyx.c \
 
@@ -188,7 +186,7 @@ sim_cython_o: sim_cython_c
 	-I $(INCLUDE_PATH)/blasfeo/include/ \
 	-I $(INCLUDE_PATH)/hpipm/include/ \
 	-I $(INCLUDE_PATH) \
-	-I /home/bryansgue/.local/lib/python3.10/site-packages/numpy/_core/include \
+	-I /home/bryansgue/.local/lib/python3.10/site-packages/numpy/core/include \
 	-I /usr/include/python3.10 \
 	acados_sim_solver_pyx.c \
 

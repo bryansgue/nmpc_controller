@@ -24,6 +24,14 @@ MujocoInterface::MujocoInterface(
         odom_topic, 10,
         std::bind(&MujocoInterface::odom_cb_, this, std::placeholders::_1));
 
+    imu_sub_ = create_subscription<sensor_msgs::msg::Imu>(
+        "/quadrotor/imu", 10,
+        std::bind(&MujocoInterface::imu_cb_, this, std::placeholders::_1));
+
+    extforce_sub_ = create_subscription<mujoco_ros_utils::msg::ExternalForce>(
+        "/quadrotor/external_force", 10,
+        std::bind(&MujocoInterface::extforce_cb_, this, std::placeholders::_1));
+
     collision_sub_ = create_subscription<std_msgs::msg::Bool>(
         "/quadrotor/collision", 10,
         std::bind(&MujocoInterface::collision_cb_, this, std::placeholders::_1));
@@ -50,6 +58,17 @@ void MujocoInterface::odom_cb_(const nav_msgs::msg::Odometry::SharedPtr msg) {
     state_.quat  << q.w, q.x, q.y, q.z;
     state_.omega << w.x, w.y, w.z;
     connected_.store(true);
+}
+
+void MujocoInterface::imu_cb_(const sensor_msgs::msg::Imu::SharedPtr msg) {
+    std::lock_guard<std::mutex> lk(state_mtx_);
+    auto& acc = msg->linear_acceleration;   // body frame, raw (noisy), includes gravity
+    state_.accel << acc.x, acc.y, acc.z;
+}
+
+void MujocoInterface::extforce_cb_(const mujoco_ros_utils::msg::ExternalForce::SharedPtr msg) {
+    std::lock_guard<std::mutex> lk(state_mtx_);
+    state_.ext_force << msg->force.x, msg->force.y, msg->force.z;   // world frame [N], GROUND TRUTH
 }
 
 void MujocoInterface::collision_cb_(const std_msgs::msg::Bool::SharedPtr msg) {

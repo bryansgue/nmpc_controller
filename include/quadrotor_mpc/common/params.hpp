@@ -4,7 +4,7 @@ namespace quadrotor_mpc {
 
 struct QuadParams {
     // Physical
-    double mass    = 1.08;      // [kg]
+    double mass    = 1.05;      // [kg] REAL mass = sum of MuJoCo geom masses (core .85 + arms .14 + thrusters .048 + props .012)
     double g       = 9.81;      // [m/s²]
     double tau_rc  = 0.03;      // [s] first-order rate lag
 

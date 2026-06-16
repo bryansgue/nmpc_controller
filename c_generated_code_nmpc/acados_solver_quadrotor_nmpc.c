@@ -352,6 +352,8 @@ void quadrotor_nmpc_acados_create_setup_functions(quadrotor_nmpc_solver_capsule*
             MAP_CASADI_FNC(expl_vde_forw[i], quadrotor_nmpc_expl_vde_forw);
         }
 
+        
+
         capsule->expl_ode_fun = (external_function_external_param_casadi *) malloc(sizeof(external_function_external_param_casadi)*N);
         for (int i = 0; i < N; i++) {
             MAP_CASADI_FNC(expl_ode_fun[i], quadrotor_nmpc_expl_ode_fun);
@@ -413,6 +415,9 @@ void quadrotor_nmpc_acados_create_set_default_parameters(quadrotor_nmpc_solver_c
     const int N = capsule->nlp_solver_plan->N;
     // initialize parameters to nominal value
     double* p = calloc(NP, sizeof(double));
+    p[3] = 1;
+    p[17] = 1.08;
+    p[21] = 33.333333333333336;
 
     for (int i = 0; i <= N; i++) {
         quadrotor_nmpc_acados_update_params(capsule, i, p, NP);
@@ -454,114 +459,45 @@ void quadrotor_nmpc_acados_setup_nlp_in(quadrotor_nmpc_solver_capsule* capsule, 
     else
     {
         // set time_steps
-    double time_step = 0.01;
+    double time_step = 0.04838709677419355;
         for (int i = 0; i < N; i++)
         {
             ocp_nlp_in_set(nlp_config, nlp_dims, nlp_in, i, "Ts", &time_step);
         }
         // set cost scaling
         double* cost_scaling = malloc((N+1)*sizeof(double));
-        cost_scaling[0] = 0.01;
-        cost_scaling[1] = 0.01;
-        cost_scaling[2] = 0.01;
-        cost_scaling[3] = 0.01;
-        cost_scaling[4] = 0.01;
-        cost_scaling[5] = 0.01;
-        cost_scaling[6] = 0.01;
-        cost_scaling[7] = 0.01;
-        cost_scaling[8] = 0.01;
-        cost_scaling[9] = 0.01;
-        cost_scaling[10] = 0.01;
-        cost_scaling[11] = 0.01;
-        cost_scaling[12] = 0.01;
-        cost_scaling[13] = 0.01;
-        cost_scaling[14] = 0.01;
-        cost_scaling[15] = 0.01;
-        cost_scaling[16] = 0.01;
-        cost_scaling[17] = 0.01;
-        cost_scaling[18] = 0.01;
-        cost_scaling[19] = 0.01;
-        cost_scaling[20] = 0.01;
-        cost_scaling[21] = 0.01;
-        cost_scaling[22] = 0.01;
-        cost_scaling[23] = 0.01;
-        cost_scaling[24] = 0.01;
-        cost_scaling[25] = 0.01;
-        cost_scaling[26] = 0.01;
-        cost_scaling[27] = 0.01;
-        cost_scaling[28] = 0.01;
-        cost_scaling[29] = 0.01;
-        cost_scaling[30] = 0.01;
-        cost_scaling[31] = 0.01;
-        cost_scaling[32] = 0.01;
-        cost_scaling[33] = 0.01;
-        cost_scaling[34] = 0.01;
-        cost_scaling[35] = 0.01;
-        cost_scaling[36] = 0.01;
-        cost_scaling[37] = 0.01;
-        cost_scaling[38] = 0.01;
-        cost_scaling[39] = 0.01;
-        cost_scaling[40] = 0.01;
-        cost_scaling[41] = 0.01;
-        cost_scaling[42] = 0.01;
-        cost_scaling[43] = 0.01;
-        cost_scaling[44] = 0.01;
-        cost_scaling[45] = 0.01;
-        cost_scaling[46] = 0.01;
-        cost_scaling[47] = 0.01;
-        cost_scaling[48] = 0.01;
-        cost_scaling[49] = 0.01;
-        cost_scaling[50] = 0.01;
-        cost_scaling[51] = 0.01;
-        cost_scaling[52] = 0.01;
-        cost_scaling[53] = 0.01;
-        cost_scaling[54] = 0.01;
-        cost_scaling[55] = 0.01;
-        cost_scaling[56] = 0.01;
-        cost_scaling[57] = 0.01;
-        cost_scaling[58] = 0.01;
-        cost_scaling[59] = 0.01;
-        cost_scaling[60] = 0.01;
-        cost_scaling[61] = 0.01;
-        cost_scaling[62] = 0.01;
-        cost_scaling[63] = 0.01;
-        cost_scaling[64] = 0.01;
-        cost_scaling[65] = 0.01;
-        cost_scaling[66] = 0.01;
-        cost_scaling[67] = 0.01;
-        cost_scaling[68] = 0.01;
-        cost_scaling[69] = 0.01;
-        cost_scaling[70] = 0.01;
-        cost_scaling[71] = 0.01;
-        cost_scaling[72] = 0.01;
-        cost_scaling[73] = 0.01;
-        cost_scaling[74] = 0.01;
-        cost_scaling[75] = 0.01;
-        cost_scaling[76] = 0.01;
-        cost_scaling[77] = 0.01;
-        cost_scaling[78] = 0.01;
-        cost_scaling[79] = 0.01;
-        cost_scaling[80] = 0.01;
-        cost_scaling[81] = 0.01;
-        cost_scaling[82] = 0.01;
-        cost_scaling[83] = 0.01;
-        cost_scaling[84] = 0.01;
-        cost_scaling[85] = 0.01;
-        cost_scaling[86] = 0.01;
-        cost_scaling[87] = 0.01;
-        cost_scaling[88] = 0.01;
-        cost_scaling[89] = 0.01;
-        cost_scaling[90] = 0.01;
-        cost_scaling[91] = 0.01;
-        cost_scaling[92] = 0.01;
-        cost_scaling[93] = 0.01;
-        cost_scaling[94] = 0.01;
-        cost_scaling[95] = 0.01;
-        cost_scaling[96] = 0.01;
-        cost_scaling[97] = 0.01;
-        cost_scaling[98] = 0.01;
-        cost_scaling[99] = 0.01;
-        cost_scaling[100] = 1;
+        cost_scaling[0] = 0.04838709677419355;
+        cost_scaling[1] = 0.04838709677419355;
+        cost_scaling[2] = 0.04838709677419355;
+        cost_scaling[3] = 0.04838709677419355;
+        cost_scaling[4] = 0.04838709677419355;
+        cost_scaling[5] = 0.04838709677419355;
+        cost_scaling[6] = 0.04838709677419355;
+        cost_scaling[7] = 0.04838709677419355;
+        cost_scaling[8] = 0.04838709677419355;
+        cost_scaling[9] = 0.04838709677419355;
+        cost_scaling[10] = 0.04838709677419355;
+        cost_scaling[11] = 0.04838709677419355;
+        cost_scaling[12] = 0.04838709677419355;
+        cost_scaling[13] = 0.04838709677419355;
+        cost_scaling[14] = 0.04838709677419355;
+        cost_scaling[15] = 0.04838709677419355;
+        cost_scaling[16] = 0.04838709677419355;
+        cost_scaling[17] = 0.04838709677419355;
+        cost_scaling[18] = 0.04838709677419355;
+        cost_scaling[19] = 0.04838709677419355;
+        cost_scaling[20] = 0.04838709677419355;
+        cost_scaling[21] = 0.04838709677419355;
+        cost_scaling[22] = 0.04838709677419355;
+        cost_scaling[23] = 0.04838709677419355;
+        cost_scaling[24] = 0.04838709677419355;
+        cost_scaling[25] = 0.04838709677419355;
+        cost_scaling[26] = 0.04838709677419355;
+        cost_scaling[27] = 0.04838709677419355;
+        cost_scaling[28] = 0.04838709677419355;
+        cost_scaling[29] = 0.04838709677419355;
+        cost_scaling[30] = 0.04838709677419355;
+        cost_scaling[31] = 1;
         for (int i = 0; i <= N; i++)
         {
             ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, i, "scaling", &cost_scaling[i]);
@@ -575,6 +511,7 @@ void quadrotor_nmpc_acados_setup_nlp_in(quadrotor_nmpc_solver_capsule* capsule, 
     for (int i = 0; i < N; i++)
     {
         ocp_nlp_dynamics_model_set_external_param_fun(nlp_config, nlp_dims, nlp_in, i, "expl_vde_forw", &capsule->expl_vde_forw[i]);
+        
         ocp_nlp_dynamics_model_set_external_param_fun(nlp_config, nlp_dims, nlp_in, i, "expl_ode_fun", &capsule->expl_ode_fun[i]);
         ocp_nlp_dynamics_model_set_external_param_fun(nlp_config, nlp_dims, nlp_in, i, "expl_vde_adj", &capsule->expl_vde_adj[i]);
     }
@@ -807,7 +744,7 @@ static void quadrotor_nmpc_acados_create_set_opts(quadrotor_nmpc_solver_capsule*
     ocp_nlp_solver_opts_set(nlp_config, nlp_opts, "levenberg_marquardt", &levenberg_marquardt);
 
     /* options QP solver */
-    int qp_solver_cond_N;const int qp_solver_cond_N_ori = 25;
+    int qp_solver_cond_N;const int qp_solver_cond_N_ori = 7;
     qp_solver_cond_N = N < qp_solver_cond_N_ori ? N : qp_solver_cond_N_ori; // use the minimum value here
     ocp_nlp_solver_opts_set(nlp_config, nlp_opts, "qp_cond_N", &qp_solver_cond_N);
     double reg_epsilon = 0.0001;
@@ -1042,7 +979,7 @@ int quadrotor_nmpc_acados_update_params(quadrotor_nmpc_solver_capsule* capsule, 
 {
     int solver_status = 0;
 
-    int casadi_np = 17;
+    int casadi_np = 22;
     if (casadi_np != np) {
         printf("acados_update_params: trying to set %i parameters for external functions."
             " External function has %i parameters. Exiting.\n", np, casadi_np);
@@ -1113,11 +1050,13 @@ int quadrotor_nmpc_acados_free(quadrotor_nmpc_solver_capsule* capsule)
     for (int i = 0; i < N; i++)
     {
         external_function_external_param_casadi_free(&capsule->expl_vde_forw[i]);
+        
         external_function_external_param_casadi_free(&capsule->expl_ode_fun[i]);
         external_function_external_param_casadi_free(&capsule->expl_vde_adj[i]);
     }
     free(capsule->expl_vde_adj);
     free(capsule->expl_vde_forw);
+    
     free(capsule->expl_ode_fun);
 
     // cost

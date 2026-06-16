@@ -16,181 +16,128 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{kamel2017linear,falanga2022embedded}
-\citation{kamel2017linear}
-\citation{falanga2022embedded}
-\citation{romero2022mpcc}
-\citation{krinner2024mpccpp}
-\citation{hanover2022performance}
-\citation{torrente2021data}
-\citation{wang2024neuromhe}
-\citation{torshizi2025contextual}
-\citation{choo2023data}
+\citation{hanover2024autonomous,romero2022model,foehn2021time}
+\citation{smeur2016adaptive,sun2022comparative}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
-\newlabel{sec:intro}{{I}{1}{Introduction}{section.1}{}}
-\citation{eschmann2024data}
-\citation{gupta2025lolnmpc}
-\citation{fan2025efficient}
-\citation{kamel2017linear}
-\citation{torrente2021data}
-\citation{romero2022mpcc}
-\citation{krinner2024mpccpp}
-\citation{hanover2022performance}
-\citation{wang2024neuromhe}
-\citation{eschmann2024data}
-\citation{gupta2025lolnmpc}
-\citation{fan2025efficient}
-\citation{zhang2025dual}
-\citation{fan2025efficient}
-\citation{wang2024neuromhe}
-\citation{hanover2022performance}
-\citation{zhang2025dual}
-\citation{eschmann2024data,gupta2025lolnmpc}
-\citation{romero2022mpcc,krinner2024mpccpp}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Estimation-aware control for agile quadrotors. $\hat  {m}$\,/\,$\hat  {\tau }$ = mass\,/\,body-rate lag estimated online (\leavevmode {\color  {black}{\fontfamily  {pzd}\fontencoding  {U}\fontseries  {m}\fontshape  {n}\selectfont  \char 51}}\nobreakspace  {}online, off = offline, \leavevmode {\color  {black}{\fontfamily  {pzd}\fontencoding  {U}\fontseries  {m}\fontshape  {n}\selectfont  \char 55}}\nobreakspace  {}no); CL = closed-loop correction of prediction model; Adp = aggressiveness modulated by estimation confidence.}}{2}{table.1}\protected@file@percent }
-\newlabel{tab:comparison}{{I}{2}{Estimation-aware control for agile quadrotors. $\hat {m}$\,/\,$\hat {\tau }$ = mass\,/\,body-rate lag estimated online (\cmark ~online, off = offline, \xmark ~no); CL = closed-loop correction of prediction model; Adp = aggressiveness modulated by estimation confidence}{table.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {II}System Model}{2}{section.2}\protected@file@percent }
-\newlabel{sec:model}{{II}{2}{System Model}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-A}}Notation on the two thrusts}{1}{subsection.1.1}\protected@file@percent }
+\citation{torrente2021data,nguyen2020model,liu2023nonlinear,kabzan2019learning}
+\citation{liu2023nonlinear,kabzan2019learning}
+\citation{burri2018system}
+\citation{wuest2019online}
+\citation{romero2022model,foehn2021time}
+\citation{smeur2016adaptive,sun2022comparative}
+\citation{bauersfeld2021neurobem}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-B}}Related work}{2}{subsection.1.2}\protected@file@percent }
+\newlabel{sec:related}{{\mbox  {I-B}}{2}{Related work}{subsection.1.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-C}}Identified gap and contributions}{2}{subsection.1.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Model parameters and their physical meaning.}}{2}{table.1}\protected@file@percent }
+\newlabel{tab:notation}{{I}{2}{Model parameters and their physical meaning}{table.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {II}System Model and Notation}{2}{section.2}\protected@file@percent }
+\newlabel{sec:model}{{II}{2}{System Model and Notation}{section.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Notation}{2}{subsection.2.1}\protected@file@percent }
-\newlabel{sec:notation}{{\mbox  {II-A}}{2}{Notation}{subsection.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Quadrotor Physical Dynamics}{2}{subsection.2.2}\protected@file@percent }
-\newlabel{eq:state_phy}{{1}{2}{Quadrotor Physical Dynamics}{equation.2.1}{}}
-\citation{gupta2025lolnmpc,eschmann2024data}
-\citation{romero2022mpcc}
-\citation{falanga2022embedded}
-\newlabel{eq:dynamics}{{2}{3}{Quadrotor Physical Dynamics}{equation.2.2}{}}
-\newlabel{eq:dp}{{2a}{3}{Quadrotor Physical Dynamics}{equation.2.2a}{}}
-\newlabel{eq:dv}{{2b}{3}{Quadrotor Physical Dynamics}{equation.2.2b}{}}
-\newlabel{eq:dq}{{2c}{3}{Quadrotor Physical Dynamics}{equation.2.2c}{}}
-\newlabel{eq:domega}{{2d}{3}{Quadrotor Physical Dynamics}{equation.2.2d}{}}
-\newlabel{eq:R_from_q}{{3}{3}{Quadrotor Physical Dynamics}{equation.2.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Path Parameterisation}{3}{subsection.2.3}\protected@file@percent }
-\newlabel{sec:path}{{\mbox  {II-C}}{3}{Path Parameterisation}{subsection.2.3}{}}
-\newlabel{eq:bspline}{{4}{3}{Path Parameterisation}{equation.2.4}{}}
-\newlabel{eq:omega_ff}{{5}{3}{Path Parameterisation}{equation.2.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {III}Lie-Invariant Moving Horizon Estimator}{3}{section.3}\protected@file@percent }
-\newlabel{sec:mhe}{{III}{3}{Lie-Invariant Moving Horizon Estimator}{section.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Augmented State for Online Estimation}{3}{subsection.3.1}\protected@file@percent }
-\newlabel{eq:augmented_state}{{6}{3}{Augmented State for Online Estimation}{equation.3.6}{}}
-\newlabel{eq:param_dynamics}{{7}{3}{Augmented State for Online Estimation}{equation.3.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Measurement Model}{3}{subsection.3.2}\protected@file@percent }
-\newlabel{eq:measurement}{{8}{3}{Measurement Model}{equation.3.8}{}}
-\newlabel{eq:h_meas}{{9}{3}{Measurement Model}{equation.3.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}MHE Optimal Control Problem}{3}{subsection.3.3}\protected@file@percent }
-\newlabel{eq:mhe_ocp}{{10}{3}{MHE Optimal Control Problem}{equation.3.10}{}}
-\newlabel{eq:mhe_cost}{{10a}{3}{MHE Optimal Control Problem}{equation.3.10a}{}}
-\newlabel{eq:mhe_dyn}{{10b}{3}{MHE Optimal Control Problem}{equation.3.10b}{}}
-\newlabel{eq:mhe_bounds}{{10c}{3}{MHE Optimal Control Problem}{equation.3.10c}{}}
-\newlabel{eq:meas_cost}{{11}{3}{MHE Optimal Control Problem}{equation.3.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Lie-Invariant Arrival Cost}{3}{subsection.3.4}\protected@file@percent }
-\newlabel{sec:arrival}{{\mbox  {III-D}}{3}{Lie-Invariant Arrival Cost}{subsection.3.4}{}}
-\newlabel{eq:euclidean_arrival}{{12}{3}{Lie-Invariant Arrival Cost}{equation.3.12}{}}
-\newlabel{eq:q_error}{{13}{3}{Lie-Invariant Arrival Cost}{equation.3.13}{}}
-\newlabel{eq:hemisphere}{{14}{3}{Lie-Invariant Arrival Cost}{equation.3.14}{}}
-\citation{romero2022mpcc}
-\citation{romero2022mpcc}
-\newlabel{eq:log_map}{{15}{4}{Lie-Invariant Arrival Cost}{equation.3.15}{}}
-\newlabel{eq:lie_arrival}{{16}{4}{Lie-Invariant Arrival Cost}{equation.3.16}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-E}}Arrival Cost Propagation}{4}{subsection.3.5}\protected@file@percent }
-\newlabel{eq:arrival_prop}{{17}{4}{Arrival Cost Propagation}{equation.3.17}{}}
-\newlabel{eq:prior_mean}{{17a}{4}{Arrival Cost Propagation}{equation.3.17a}{}}
-\newlabel{eq:prior_cov}{{17b}{4}{Arrival Cost Propagation}{equation.3.17b}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Adaptive Model Predictive Contouring Control}{4}{section.4}\protected@file@percent }
-\newlabel{sec:mpcc}{{IV}{4}{Adaptive Model Predictive Contouring Control}{section.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}MPCC Virtual States and Control Input}{4}{subsection.4.1}\protected@file@percent }
-\newlabel{sec:mpcc_state}{{\mbox  {IV-A}}{4}{MPCC Virtual States and Control Input}{subsection.4.1}{}}
-\newlabel{eq:mpcc_state}{{18}{4}{MPCC Virtual States and Control Input}{equation.4.18}{}}
-\newlabel{eq:virtual_dyn}{{19}{4}{MPCC Virtual States and Control Input}{equation.4.19}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Contouring and Lag Error Decomposition}{4}{subsection.4.2}\protected@file@percent }
-\newlabel{sec:errors}{{\mbox  {IV-B}}{4}{Contouring and Lag Error Decomposition}{subsection.4.2}{}}
-\newlabel{eq:errors}{{20}{4}{Contouring and Lag Error Decomposition}{equation.4.20}{}}
-\newlabel{eq:lag}{{20a}{4}{Contouring and Lag Error Decomposition}{equation.4.20a}{}}
-\newlabel{eq:cont}{{20b}{4}{Contouring and Lag Error Decomposition}{equation.4.20b}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Contouring Cost and Lie-Invariant Attitude Error}{4}{subsection.4.3}\protected@file@percent }
-\newlabel{eq:att_err_mpcc}{{21}{4}{Contouring Cost and Lie-Invariant Attitude Error}{equation.4.21}{}}
-\newlabel{eq:rate_err}{{22}{4}{Contouring Cost and Lie-Invariant Attitude Error}{equation.4.22}{}}
-\newlabel{eq:mpcc_stage}{{23}{4}{Contouring Cost and Lie-Invariant Attitude Error}{equation.4.23}{}}
-\newlabel{eq:mpcc_terminal}{{24}{4}{Contouring Cost and Lie-Invariant Attitude Error}{equation.4.24}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Continuous-time dynamics}{2}{subsection.2.2}\protected@file@percent }
+\newlabel{eq:dp}{{1}{2}{Continuous-time dynamics}{equation.2.1}{}}
+\newlabel{eq:dv}{{2}{2}{Continuous-time dynamics}{equation.2.2}{}}
+\newlabel{eq:dq}{{3}{2}{Continuous-time dynamics}{equation.2.3}{}}
+\newlabel{eq:dw}{{4}{2}{Continuous-time dynamics}{equation.2.4}{}}
+\newlabel{eq:df}{{5}{2}{Continuous-time dynamics}{equation.2.5}{}}
+\citation{romero2022model,foehn2021time}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Parameter vector}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}Discrete-time form and measurements}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}Identifiability of the Translational Parameters}{3}{section.3}\protected@file@percent }
+\newlabel{sec:obs}{{III}{3}{Identifiability of the Translational Parameters}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Linear regressor}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{eq:regressor}{{7}{3}{Linear regressor}{equation.3.7}{}}
+\newlabel{eq:gramian}{{8}{3}{Linear regressor}{equation.3.8}{}}
+\newlabel{lem:idf}{{1}{3}{Identifiability}{lemma.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Hover singularity}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{prop:hover}{{1}{3}{Hover singularity}{proposition.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Persistency of excitation under agile flight}{3}{subsection.3.3}\protected@file@percent }
+\newlabel{prop:pe}{{2}{3}{Persistency of excitation}{proposition.2}{}}
+\newlabel{eq:pe-cond}{{9}{3}{Persistency of excitation}{equation.3.9}{}}
 \citation{verschueren2022acados}
-\citation{andersson2019casadi}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}MPCC Optimal Control Problem}{5}{subsection.4.4}\protected@file@percent }
-\newlabel{eq:mpcc_ocp}{{25}{5}{MPCC Optimal Control Problem}{equation.4.25}{}}
-\newlabel{eq:mpcc_obj}{{25a}{5}{MPCC Optimal Control Problem}{equation.4.25a}{}}
-\newlabel{eq:mpcc_ic}{{25b}{5}{MPCC Optimal Control Problem}{equation.4.25b}{}}
-\newlabel{eq:mpcc_dyn}{{25c}{5}{MPCC Optimal Control Problem}{equation.4.25c}{}}
-\newlabel{eq:thrust_bounds}{{25d}{5}{MPCC Optimal Control Problem}{equation.4.25d}{}}
-\newlabel{eq:rate_bounds}{{25e}{5}{MPCC Optimal Control Problem}{equation.4.25e}{}}
-\newlabel{eq:lag_soft}{{25f}{5}{MPCC Optimal Control Problem}{equation.4.25f}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Adaptive Progress Weight}{5}{subsection.4.5}\protected@file@percent }
-\newlabel{sec:adaptive_ws}{{\mbox  {IV-E}}{5}{Adaptive Progress Weight}{subsection.4.5}{}}
-\newlabel{eq:adaptive_ws}{{26}{5}{Adaptive Progress Weight}{equation.4.26}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {V}Closed-Loop Architecture}{5}{section.5}\protected@file@percent }
-\newlabel{sec:architecture}{{V}{5}{Closed-Loop Architecture}{section.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Closed-loop MHE--MPCC architecture. The MHE accumulates $N_e\!=\!20$ past measurements and returns: physical state estimate $\hat  {\bm  {x}}_k\!\in \!\mathbb  {R}^{13}$, parameter estimate $\hat  {\bm  {\theta }}_k\!=\![\hat  {m}_k,\,\hat  {k}_{\tau ,k},\, \hat  {\bm  {d}}_k^\top ]^\top \!\in \!\mathbb  {R}^5$ (where $\hat  {k}_{\tau }=1/\hat  {\tau }_{\mathrm  {rc}}$), and prior covariance block $\bar  {\mathbf  {P}}_{\theta ,k}\!\in \!\mathbb  {R}^{5\times 5}$. The adaptive block computes $\sigma _k\!=\!\operatorname  {tr}(\bar  {\mathbf  {P}}_{\theta ,k})$ and injects $W_s(k)$ as a runtime parameter into the MPCC. Virtual states $(\theta _k,v_{\theta ,k},f_k)$ are integrated outside the solver and fed forward to the MPCC initial condition. Both solvers run sequentially at \SI {100}{\hertz }.}}{5}{figure.1}\protected@file@percent }
-\newlabel{fig:architecture}{{1}{5}{Closed-loop MHE--MPCC architecture. The MHE accumulates $N_e\!=\!20$ past measurements and returns: physical state estimate $\hat {\vect {x}}_k\!\in \!\R ^{13}$, parameter estimate $\hat {\vect {\theta }}_k\!=\![\hat {m}_k,\,\hat {k}_{\tau ,k},\, \hat {\vect {d}}_k^\top ]^\top \!\in \!\R ^5$ (where $\hat {k}_{\tau }=1/\hat {\tau }_{\mathrm {rc}}$), and prior covariance block $\bar {\mat {P}}_{\theta ,k}\!\in \!\R ^{5\times 5}$. The adaptive block computes $\sigma _k\!=\!\operatorname {tr}(\bar {\mat {P}}_{\theta ,k})$ and injects $W_s(k)$ as a runtime parameter into the MPCC. Virtual states $(\theta _k,v_{\theta ,k},f_k)$ are integrated outside the solver and fed forward to the MPCC initial condition. Both solvers run sequentially at \SI {100}{\hertz }}{figure.1}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Online MHE--MPCC control loop (\SI {100}{\hertz })}}{5}{algorithm.1}\protected@file@percent }
-\newlabel{alg:main}{{1}{5}{Closed-Loop Architecture}{algorithm.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {VI}Experimental Results}{5}{section.6}\protected@file@percent }
-\newlabel{sec:results}{{VI}{5}{Experimental Results}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Experimental Setup}{5}{subsection.6.1}\protected@file@percent }
-\newlabel{sec:setup}{{\mbox  {VI-A}}{5}{Experimental Setup}{subsection.6.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VI-A}1}Platform}{5}{subsubsection.6.1.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces MPCC and MHE design parameters.}}{6}{table.2}\protected@file@percent }
-\newlabel{tab:solver_params}{{II}{6}{MPCC and MHE design parameters}{table.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VI-A}2}Path and speed}{6}{subsubsection.6.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VI-A}3}Mass mismatch scenario}{6}{subsubsection.6.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VI-A}4}Wind disturbance scenarios}{6}{subsubsection.6.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {VI-A}5}Compared modes}{6}{subsubsection.6.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}SiL\nobreakspace  {}A: MHE Convergence under Mass Mismatch}{6}{subsection.6.2}\protected@file@percent }
-\newlabel{sec:mhe_convergence}{{\mbox  {VI-B}}{6}{SiL~A: MHE Convergence under Mass Mismatch}{subsection.6.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}SiL\nobreakspace  {}B: Ablation Study}{6}{subsection.6.3}\protected@file@percent }
-\newlabel{sec:ablation}{{\mbox  {VI-C}}{6}{SiL~B: Ablation Study}{subsection.6.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces MHE convergence during a v2 flight at $v_{\theta ,\qopname  \relax m{max}}=\SI {10}{m/s}$. \textbf  {Top:} mass estimate $\hat  {m}_k$ converging to $m_{\mathrm  {true}}$ (dashed); the grey band marks the initial 17\% error. \textbf  {Bottom:} parametric uncertainty $\sigma _k=\operatorname  {tr}(\bar  {\mathbf  {P}}_{\theta ,k})$ (log scale, left axis) and adaptive progress weight $W_s(k)$ (right axis). The horizontal line indicates $\sigma _{\mathrm  {thr}}$.}}{6}{figure.2}\protected@file@percent }
-\newlabel{fig:convergence}{{2}{6}{MHE convergence during a v2 flight at $v_{\theta ,\max }=\SI {10}{m/s}$. \textbf {Top:} mass estimate $\hat {m}_k$ converging to $m_{\mathrm {true}}$ (dashed); the grey band marks the initial 17\% error. \textbf {Bottom:} parametric uncertainty $\sigma _k=\operatorname {tr}(\bar {\mat {P}}_{\theta ,k})$ (log scale, left axis) and adaptive progress weight $W_s(k)$ (right axis). The horizontal line indicates $\sigma _{\mathrm {thr}}$}{figure.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Ablation study: position RMSE (mean$\pm $std over $N$ runs) at $v_{\theta ,\qopname  \relax m{max}}=\SI {10}{m/s}$ with 17\% mass error.}}{6}{table.3}\protected@file@percent }
-\newlabel{tab:ablation}{{III}{6}{Ablation study: position RMSE (mean$\pm $std over $N$ runs) at $v_{\theta ,\max }=\SI {10}{m/s}$ with 17\% mass error}{table.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}SiL\nobreakspace  {}C: Tracking Performance}{6}{subsection.6.4}\protected@file@percent }
-\newlabel{sec:comparison}{{\mbox  {VI-D}}{6}{SiL~C: Tracking Performance}{subsection.6.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-E}}SiL\nobreakspace  {}D: Wind Disturbance Rejection}{6}{subsection.6.5}\protected@file@percent }
-\newlabel{sec:wind}{{\mbox  {VI-E}}{6}{SiL~D: Wind Disturbance Rejection}{subsection.6.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-F}}Hardware Experiments}{6}{subsection.6.6}\protected@file@percent }
-\newlabel{sec:hardware}{{\mbox  {VI-F}}{6}{Hardware Experiments}{subsection.6.6}{}}
-\bibstyle{IEEEtran}
-\bibcite{kamel2017linear}{1}
-\bibcite{falanga2022embedded}{2}
-\bibcite{romero2022mpcc}{3}
-\bibcite{krinner2024mpccpp}{4}
-\bibcite{hanover2022performance}{5}
+\citation{liu2023nonlinear,kabzan2019learning}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Empirical Gramian condition number $\kappa (\mathbf  {G})$ on a $1$\,s window for three regimes.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:gramian}{{II}{4}{Empirical Gramian condition number $\kappa (\mat G)$ on a $1$\,s window for three regimes}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Empirical conditioning}{4}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-E}}Decoupling of the actuator parameters}{4}{subsection.3.5}\protected@file@percent }
+\newlabel{lem:decoup}{{2}{4}{Structural decoupling}{lemma.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-F}}Implications for the architecture}{4}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Translational Moving-Horizon Estimator}{4}{section.4}\protected@file@percent }
+\newlabel{sec:mhe-t}{{IV}{4}{Translational Moving-Horizon Estimator}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}State and dynamics}{4}{subsection.4.1}\protected@file@percent }
+\newlabel{eq:dv-t}{{12}{4}{State and dynamics}{equation.4.12}{}}
+\newlabel{eq:rw}{{13}{4}{State and dynamics}{equation.4.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Measurement model}{4}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Arrival cost}{4}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}OCP formulation}{4}{subsection.4.4}\protected@file@percent }
+\newlabel{eq:mhe-ocp}{{16}{4}{OCP formulation}{equation.4.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Numerical solver}{4}{subsection.4.5}\protected@file@percent }
+\citation{forster2015imu}
+\citation{todorov2012mujoco}
+\citation{verschueren2022acados}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-F}}Why the reduction matters numerically}{5}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}RLS Identification of Actuator Time Constants}{5}{section.5}\protected@file@percent }
+\newlabel{sec:rls}{{V}{5}{RLS Identification of Actuator Time Constants}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Rate-loop time constant}{5}{subsection.5.1}\protected@file@percent }
+\newlabel{eq:rls-ktau-step}{{17}{5}{Rate-loop time constant}{equation.5.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Thrust time constant}{5}{subsection.5.2}\protected@file@percent }
+\newlabel{eq:f-recon}{{21}{5}{Thrust time constant}{equation.5.21}{}}
+\newlabel{eq:rls-kf-step}{{22}{5}{Thrust time constant}{equation.5.22}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Multi-rate parameter estimation per $100$\,Hz step.}}{5}{algorithm.1}\protected@file@percent }
+\newlabel{alg:pipeline}{{1}{5}{Multi-rate scheduling}{algorithm.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Multi-rate scheduling}{5}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Smoothing}{5}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Experimental Setup}{5}{section.6}\protected@file@percent }
+\newlabel{sec:setup}{{VI}{5}{Experimental Setup}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Simulator}{5}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Final identified values across the velocity sweep (mean over second half of run). True values: $m\!=\!1.05$\,kg, $\tau _{rc}\!\approx \!0.056$\,s, $\tau _f\!\approx \!0.009$\,s.}}{6}{table.3}\protected@file@percent }
+\newlabel{tab:converged}{{III}{6}{Final identified values across the velocity sweep (mean over second half of run). True values: $m\!=\!1.05$\,kg, $\tau _{rc}\!\approx \!0.056$\,s, $\tau _f\!\approx \!0.009$\,s}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}Controller}{6}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Parameter initialisation}{6}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}Metrics}{6}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Results}{6}{section.7}\protected@file@percent }
+\newlabel{sec:results}{{VII}{6}{Results}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Velocity sweep: identification quality vs excitation}{6}{subsection.7.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Identification pattern across the velocity sweep. Mass is identified accurately even at low speed, because the translational acceleration excites the $f\bm  {a}$ column of the regressor $\Phi $. The actuator time constants $\hat  \tau _{rc}$ and $\hat  \tau _f$ converge monotonically toward their true values as $v_{peak}$ increases: at low excitation the rate-loop and thrust-loop are barely commanded so their RLS residuals carry little information; above $v_{peak}\!\approx \!10$\,m/s both estimates saturate close to the offline-identified $\tau _{rc}\!\approx \!56$\,ms and $\tau _f\!\approx \!9$\,ms.}}{6}{figure.1}\protected@file@percent }
+\newlabel{fig:vsweep}{{1}{6}{Identification pattern across the velocity sweep. Mass is identified accurately even at low speed, because the translational acceleration excites the $f\vect a$ column of the regressor $\Phi $. The actuator time constants $\hat \tau _{rc}$ and $\hat \tau _f$ converge monotonically toward their true values as $v_{peak}$ increases: at low excitation the rate-loop and thrust-loop are barely commanded so their RLS residuals carry little information; above $v_{peak}\!\approx \!10$\,m/s both estimates saturate close to the offline-identified $\tau _{rc}\!\approx \!56$\,ms and $\tau _f\!\approx \!9$\,ms}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Online versus offline reconciliation}{6}{subsection.7.2}\protected@file@percent }
+\newlabel{eq:z-shortcut}{{26}{6}{Online versus offline reconciliation}{equation.7.26}{}}
+\citation{liu2023nonlinear}
+\citation{forster2015imu}
+\citation{smeur2016adaptive,sun2022comparative}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Offline mass identification: full-model MHE (rigorous, $1.11$\,kg) versus $z$-shortcut (perfect-model approximation, $1.02$\,kg). True mass $1.05$\,kg lies between the two methods; the full-model MHE is the only one whose residuals are explicit.}}{7}{figure.2}\protected@file@percent }
+\newlabel{fig:off}{{2}{7}{Offline mass identification: full-model MHE (rigorous, $1.11$\,kg) versus $z$-shortcut (perfect-model approximation, $1.02$\,kg). True mass $1.05$\,kg lies between the two methods; the full-model MHE is the only one whose residuals are explicit}{figure.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Tracking RMSE [m] of the NMPC closed loop with nominal versus identified parameters, on the agile run.}}{7}{table.4}\protected@file@percent }
+\newlabel{tab:nmpc}{{IV}{7}{Tracking RMSE [m] of the NMPC closed loop with nominal versus identified parameters, on the agile run}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Regime study: NMPC closed-loop benefit}{7}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Computational budget}{7}{subsection.7.4}\protected@file@percent }
+\newlabel{sec:budget}{{\mbox  {VII-D}}{7}{Computational budget}{subsection.7.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Comparison with a monolithic full-state MHE}{7}{subsection.7.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Discussion}{7}{section.8}\protected@file@percent }
+\newlabel{sec:discussion}{{VIII}{7}{Discussion}{section.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-A}}Why the $5\%$ mass residual is not aerodynamic drag}{7}{subsection.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-B}}Why $\tau _f$ is sub-loop, and when to compensate}{7}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-C}}Connection to INDI}{7}{subsection.8.3}\protected@file@percent }
+\citation{wuest2019online}
+\bibcite{hanover2024autonomous}{1}
+\bibcite{romero2022model}{2}
+\bibcite{foehn2021time}{3}
+\bibcite{smeur2016adaptive}{4}
+\bibcite{sun2022comparative}{5}
 \bibcite{torrente2021data}{6}
-\bibcite{wang2024neuromhe}{7}
-\bibcite{choo2023data}{8}
-\bibcite{eschmann2024data}{9}
-\bibcite{fan2025efficient}{10}
-\bibcite{zhang2025dual}{11}
-\bibcite{gupta2025lolnmpc}{12}
-\bibcite{torshizi2025contextual}{13}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Position error vs.\ arc-length $\theta $ for v1 (open-loop, dashed) and v2 (adaptive, solid). The shaded region highlights the error reduction after MHE convergence.}}{7}{figure.3}\protected@file@percent }
-\newlabel{fig:error_comparison}{{3}{7}{Position error vs.\ arc-length $\theta $ for v1 (open-loop, dashed) and v2 (adaptive, solid). The shaded region highlights the error reduction after MHE convergence}{figure.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces XY and XZ trajectory projections for v1 (open-loop), v2 (adaptive), and the reference path.}}{7}{figure.4}\protected@file@percent }
-\newlabel{fig:trajectories}{{4}{7}{XY and XZ trajectory projections for v1 (open-loop), v2 (adaptive), and the reference path}{figure.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-G}}Computational Budget}{7}{subsection.6.7}\protected@file@percent }
-\newlabel{sec:timing}{{\mbox  {VI-G}}{7}{Computational Budget}{subsection.6.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-H}}Discussion}{7}{subsection.6.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {VII}Conclusion}{7}{section.7}\protected@file@percent }
-\newlabel{sec:conclusion}{{VII}{7}{Conclusion}{section.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Tracking performance under wind disturbances ($v_{\theta ,\qopname  \relax m{max}}=\SI {10}{m/s}$, 17\% mass error, mean$\pm $std over $N$ runs).}}{7}{table.4}\protected@file@percent }
-\newlabel{tab:wind}{{IV}{7}{Tracking performance under wind disturbances ($v_{\theta ,\max }=\SI {10}{m/s}$, 17\% mass error, mean$\pm $std over $N$ runs)}{table.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Disturbance estimation under constant wind. \textbf  {Top:} true external acceleration (dashed) and MHE estimate $\hat  {\bm  {d}}_k$ (solid). \textbf  {Bottom:} estimation error $\left \| \bm  {d}-\hat  {\bm  {d}} \right \|$.}}{7}{figure.5}\protected@file@percent }
-\newlabel{fig:wind_dhat}{{5}{7}{Disturbance estimation under constant wind. \textbf {Top:} true external acceleration (dashed) and MHE estimate $\hat {\vect {d}}_k$ (solid). \textbf {Bottom:} estimation error $\norm {\vect {d}-\hat {\vect {d}}}$}{figure.5}{}}
-\@writefile{toc}{\contentsline {section}{References}{7}{section*.5}\protected@file@percent }
-\bibcite{verschueren2022acados}{14}
-\bibcite{andersson2019casadi}{15}
-\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Hardware tracking performance ($v_{\theta ,\qopname  \relax m{max}}=\SI {10}{m/s}$, payload-induced mass mismatch, mean$\pm $std over $N$ runs).}}{8}{table.5}\protected@file@percent }
-\newlabel{tab:hw_results}{{V}{8}{Hardware tracking performance ($v_{\theta ,\max }=\SI {10}{m/s}$, payload-induced mass mismatch, mean$\pm $std over $N$ runs)}{table.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Hardware flight trajectory: v1 (open-loop), v2 (adaptive), and reference path.}}{8}{figure.6}\protected@file@percent }
-\newlabel{fig:hw_trajectory}{{6}{8}{Hardware flight trajectory: v1 (open-loop), v2 (adaptive), and reference path}{figure.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Solver timing statistics (Intel Core i7, single-threaded). Budget: \SI {10}{ms} per step at \SI {100}{\hertz }.}}{8}{table.6}\protected@file@percent }
-\newlabel{tab:timing}{{VI}{8}{Solver timing statistics (Intel Core i7, single-threaded). Budget: \SI {10}{ms} per step at \SI {100}{\hertz }}{table.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Per-step solve time for the MPCC, MHE, and full control loop during a v2 flight. The dashed horizontal line marks the \SI {10}{ms} real-time deadline.}}{8}{figure.7}\protected@file@percent }
-\newlabel{fig:timing}{{7}{8}{Per-step solve time for the MPCC, MHE, and full control loop during a v2 flight. The dashed horizontal line marks the \SI {10}{ms} real-time deadline}{figure.7}{}}
+\bibcite{nguyen2020model}{7}
+\bibcite{liu2023nonlinear}{8}
+\bibcite{kabzan2019learning}{9}
+\bibcite{burri2018system}{10}
+\bibcite{wuest2019online}{11}
+\bibcite{bauersfeld2021neurobem}{12}
+\bibcite{verschueren2022acados}{13}
+\bibcite{forster2015imu}{14}
+\bibcite{todorov2012mujoco}{15}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-D}}Methodological lesson: do not estimate the measured}{8}{subsection.8.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-E}}Limitations}{8}{subsection.8.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IX}Conclusion}{8}{section.9}\protected@file@percent }
+\newlabel{sec:conclusion}{{IX}{8}{Conclusion}{section.9}{}}
+\@writefile{toc}{\contentsline {section}{References}{8}{section*.10}\protected@file@percent }
 \gdef \@abspage@last{8}

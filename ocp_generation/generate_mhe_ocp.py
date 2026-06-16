@@ -98,7 +98,11 @@ def quat_log(q):
     q_hc = if_else(q[0] < 0, -q, q)
     q_w  = q_hc[0]
     q_v  = q_hc[1:]
-    nv   = norm_2(q_v) + 1e-9
+    # Epsilon INSIDE the sqrt → finite Jacobian at qv=0 (identity). Using
+    # norm_2(qv)+1e-9 gives a 0/0=NaN derivative at qv=0 → NaN Hessian →
+    # QP_FAILURE/MINSTEP whenever attitude error ≈ 0 (low-tilt / level). This
+    # was making the MHE fail ~99% and the SiL fallback masked it.
+    nv   = ca.sqrt(ca.dot(q_v, q_v) + 1e-12)
     theta = atan2(nv, q_w)
     return 2.0 * q_v * theta / nv
 

@@ -379,9 +379,12 @@ int main(int argc, char** argv)
                 xhat.theta  = theta_current;
                 xhat.vtheta = vtheta_current;
                 xhat.f      = f_current;
-                xhat.m_hat  = quad.mass;
-                xhat.tau_hat = 0.03;
-                xhat.d_hat.setZero();
+                // NO CHEAT: keep the last smoothed parameter estimate, NEVER the
+                // true mass. Injecting quad.mass here made m̂ "converge" to 1.08
+                // purely as an artifact when the solver failed every step.
+                xhat.m_hat  = m_ema;
+                xhat.tau_hat = tau_ema;
+                xhat.d_hat  = d_ema;
                 sigma_k = mhe.get_sigma();  // keep sigma for logging
             }
 

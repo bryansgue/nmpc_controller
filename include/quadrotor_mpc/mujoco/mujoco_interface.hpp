@@ -16,6 +16,8 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <mujoco_ros_utils/msg/external_force.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <std_srvs/srv/trigger.hpp>
 #include <quadrotor_msgs/msg/trpy_command.hpp>
@@ -34,6 +36,8 @@ struct DroneState {
     Vec3  vel   = Vec3::Zero();       // world frame [m/s]
     Quat4 quat  = Quat4(1,0,0,0);    // [qw,qx,qy,qz]
     Vec3  omega = Vec3::Zero();       // body frame  [rad/s]
+    Vec3  accel = Vec3::Zero();       // body frame raw IMU specific force [m/s²] (NOISY)
+    Vec3  ext_force = Vec3::Zero();    // world-frame GROUND-TRUTH external force [N] (validation)
 
     /// Pack into 13-element vector [p, v, q, ω]
     Eigen::Matrix<double,13,1> to_vector() const {
@@ -92,6 +96,8 @@ public:
 private:
     // Callbacks
     void odom_cb_(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void imu_cb_(const sensor_msgs::msg::Imu::SharedPtr msg);
+    void extforce_cb_(const mujoco_ros_utils::msg::ExternalForce::SharedPtr msg);
     void collision_cb_(const std_msgs::msg::Bool::SharedPtr msg);
 
     // State
@@ -107,6 +113,8 @@ private:
 
     // ROS2
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
+    rclcpp::Subscription<mujoco_ros_utils::msg::ExternalForce>::SharedPtr extforce_sub_;
     rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr collision_sub_;
     rclcpp::Publisher<quadrotor_msgs::msg::TRPYCommand>::SharedPtr cmd_pub_;
     rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr reset_cli_;

@@ -99,6 +99,7 @@ typedef struct quadrotor_mhe_solver_capsule
     // dynamics
 
     external_function_external_param_casadi *expl_vde_forw;
+    external_function_external_param_casadi *expl_vde_forw_p;
     external_function_external_param_casadi *expl_ode_fun;
     external_function_external_param_casadi *expl_vde_adj;
 
@@ -172,7 +173,6 @@ ACADOS_SYMBOL_EXPORT int quadrotor_mhe_acados_setup_qp_matrices_and_factorize(qu
 ACADOS_SYMBOL_EXPORT int quadrotor_mhe_acados_free(quadrotor_mhe_solver_capsule * capsule);
 ACADOS_SYMBOL_EXPORT void quadrotor_mhe_acados_print_stats(quadrotor_mhe_solver_capsule * capsule);
 ACADOS_SYMBOL_EXPORT int quadrotor_mhe_acados_custom_update(quadrotor_mhe_solver_capsule* capsule, double* data, int data_len);
-
 
 ACADOS_SYMBOL_EXPORT ocp_nlp_in *quadrotor_mhe_acados_get_nlp_in(quadrotor_mhe_solver_capsule * capsule);
 ACADOS_SYMBOL_EXPORT ocp_nlp_out *quadrotor_mhe_acados_get_nlp_out(quadrotor_mhe_solver_capsule * capsule);
