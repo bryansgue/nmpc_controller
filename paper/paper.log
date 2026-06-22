@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.5.28)  28 MAY 2026 15:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.5.28)  21 JUN 2026 22:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -565,7 +565,7 @@ Package: amsthm 2020/05/29 v2.20.6
 \c@remark=\count321
 \c@lemma=\count322
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 50.
+h' as default language. on input line 58.
 
 
 LaTeX Warning: Unused global option(s):
@@ -574,24 +574,24 @@ LaTeX Warning: Unused global option(s):
 (./paper.aux)
 \openout1 = `paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
 
 -- Lines per column: 58 (exact).
 Package caption Info: Begin \AtBeginDocument code.
@@ -619,7 +619,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 50.
+Package hyperref Info: Link coloring OFF on input line 58.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -632,9 +632,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count329
 )
-LaTeX Info: Redefining \ref on input line 50.
-LaTeX Info: Redefining \pageref on input line 50.
-LaTeX Info: Redefining \nameref on input line 50.
+LaTeX Info: Redefining \ref on input line 58.
+LaTeX Info: Redefining \pageref on input line 58.
+LaTeX Info: Redefining \nameref on input line 58.
 
 (./paper.out) (./paper.out)
 \@outlinefile=\write3
@@ -647,113 +647,125 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 50.
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 61
-.
- (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
-LaTeX Font Info:    Trying to load font information for U+msa on input line 66.
+or `english'. on input line 58.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 81.
 
-
-(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 66.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 81.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Underfull \hbox (badness 4492) in paragraph at lines 98--102
-[]\T1/ptm/b/it/9 Index Terms\T1/ptm/b/n/9 ---Quadrotor, sys-tem iden-ti-fi-ca-t
-ion, moving-
- []
-
-[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
+) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
-Overfull \hbox (5.29985pt too wide) in paragraph at lines 297--309
+<../results//fig_system.png, id=168, 428.802pt x 181.3977pt>
+File: ../results//fig_system.png Graphic file (type png)
+<use ../results//fig_system.png>
+Package pdftex.def Info: ../results//fig_system.png  used on input line 176.
+(pdftex.def)             Requested size: 252.0pt x 106.60298pt.
+ [2 <../results//fig_system.png>] [3]
+[4]
+Overfull \hbox (4.28163pt too wide) detected at line 675
+[][]\OML/cmm/b/it/10 p[]  \OMS/cmsy/m/n/10    \OML/cmm/b/it/10 p[]  \OT1/cmr/m/
+n/10 +  []\OML/cmm/m/it/10 a[]\OT1/cmr/m/n/10 ([] \OML/cmm/m/it/10 ![]t  \OMS/c
+msy/m/n/10 ^^@  \OT1/cmr/m/n/10 1)\OML/cmm/m/it/10 ;  a[] [] ![]t;  a[] [] ![]t
+[][];   [] < [];
+ []
+
+[5]
+Overfull \hbox (1.41916pt too wide) in paragraph at lines 717--736
  [][] 
  []
 
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 415--420
-\T1/ptm/m/it/10 with the one-dimensional null space spanned by
- []
+[6]
+<../results//fig_dhat.png, id=333, 443.9787pt x 334.3692pt>
+File: ../results//fig_dhat.png Graphic file (type png)
+<use ../results//fig_dhat.png>
+Package pdftex.def Info: ../results//fig_dhat.png  used on input line 808.
+(pdftex.def)             Requested size: 252.0pt x 189.78629pt.
+<../results//fig_force_corr.png, id=334, 456.9873pt x 269.5671pt>
+File: ../results//fig_force_corr.png Graphic file (type png)
+<use ../results//fig_force_corr.png>
+Package pdftex.def Info: ../results//fig_force_corr.png  used on input line 817
+.
+(pdftex.def)             Requested size: 252.0pt x 148.649pt.
+<../results//fig_calib.png, id=338, 750.1626pt x 236.8047pt>
+File: ../results//fig_calib.png Graphic file (type png)
+<use ../results//fig_calib.png>
+Package pdftex.def Info: ../results//fig_calib.png  used on input line 840.
+(pdftex.def)             Requested size: 252.0pt x 79.54776pt.
+<../results//fig_massconv.png, id=340, 445.4241pt x 258.4857pt>
+File: ../results//fig_massconv.png Graphic file (type png)
+<use ../results//fig_massconv.png>
+Package pdftex.def Info: ../results//fig_massconv.png  used on input line 859.
+(pdftex.def)             Requested size: 252.0pt x 146.23795pt.
+<../results//fig_mass_id.png, id=344, 451.6875pt x 274.3851pt>
+File: ../results//fig_mass_id.png Graphic file (type png)
+<use ../results//fig_mass_id.png>
+Package pdftex.def Info: ../results//fig_mass_id.png  used on input line 878.
+(pdftex.def)             Requested size: 252.0pt x 153.08519pt.
+ [7 <../results//fig_dhat.png> <../results//fig_force_corr.png> <../results//fi
+g_calib.png> <../results//fig_massconv.png>]
+<../results//fig_trans.png, id=362, 474.573pt x 336.2964pt>
+File: ../results//fig_trans.png Graphic file (type png)
+<use ../results//fig_trans.png>
+Package pdftex.def Info: ../results//fig_trans.png  used on input line 914.
+(pdftex.def)             Requested size: 252.0pt x 178.57492pt.
+<../results//fig_active.png, id=367, 470.2368pt x 336.2964pt>
+File: ../results//fig_active.png Graphic file (type png)
+<use ../results//fig_active.png>
+Package pdftex.def Info: ../results//fig_active.png  used on input line 940.
+(pdftex.def)             Requested size: 252.0pt x 180.21698pt.
+ [8 <../results//fig_mass_id.png> <../results//fig_trans.png> <../results//fig_
+active.png>]
+<../results//fig_probe_opt.png, id=381, 443.4969pt x 283.2984pt>
+File: ../results//fig_probe_opt.png Graphic file (type png)
+<use ../results//fig_probe_opt.png>
+Package pdftex.def Info: ../results//fig_probe_opt.png  used on input line 966.
 
+(pdftex.def)             Requested size: 252.0pt x 160.976pt.
+<../results//fig_traj.png, id=385, 378.4539pt x 326.4195pt>
+File: ../results//fig_traj.png Graphic file (type png)
+<use ../results//fig_traj.png>
+Package pdftex.def Info: ../results//fig_traj.png  used on input line 992.
+(pdftex.def)             Requested size: 252.0pt x 217.36009pt.
+<../results//fig_rejection.png, id=386, 442.2924pt x 269.5671pt>
+File: ../results//fig_rejection.png Graphic file (type png)
+<use ../results//fig_rejection.png>
+Package pdftex.def Info: ../results//fig_rejection.png  used on input line 1001
+.
+(pdftex.def)             Requested size: 252.0pt x 153.58902pt.
+<../results//fig_dhat_sine.png, id=390, 443.9787pt x 335.3328pt>
+File: ../results//fig_dhat_sine.png Graphic file (type png)
+<use ../results//fig_dhat_sine.png>
+Package pdftex.def Info: ../results//fig_dhat_sine.png  used on input line 1074
+.
+(pdftex.def)             Requested size: 252.0pt x 190.33322pt.
+ [9 <../results//fig_probe_opt.png> <../results//fig_traj.png> <../results//fig
+_rejection.png>]
+<../results//fig_robust.png, id=405, 752.0898pt x 229.5777pt>
+File: ../results//fig_robust.png Graphic file (type png)
+<use ../results//fig_robust.png>
+Package pdftex.def Info: ../results//fig_robust.png  used on input line 1099.
+(pdftex.def)             Requested size: 252.0pt x 76.92389pt.
 
-Underfull \hbox (badness 6396) in paragraph at lines 415--420
-\OT1/cmr/m/n/10 [ \OML/cmm/m/it/10 mg;  \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ;  \O
-T1/cmr/m/n/10 0\OML/cmm/m/it/10 ;  \OMS/cmsy/m/n/10 ^^@\OT1/cmr/m/n/10 1 ][]$\T
-1/ptm/m/it/10 . Equiv-a-lently, $\OT1/cmr/m/n/10 1\OML/cmm/m/it/10 =m$ \T1/ptm/
-m/it/10 and $\OML/cmm/m/it/10 d[]$ \T1/ptm/m/it/10 are not
- []
-
-[3]
-Underfull \hbox (badness 4660) in paragraph at lines 605--610
-[]\T1/ptm/m/n/10 The con-ven-tional full-state MHE [[]8[]], [[]9[]] aug-ments
- []
-
-[4]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 692.
- [5]
-Underfull \hbox (badness 2005) in paragraph at lines 783--792
-[]\T1/ptm/m/n/10 We run the full multi-rate pipeline at six tra-jec-tory
- []
-
-<../results/velocity_sweep.png, id=406, 432.1746pt x 462.528pt>
-File: ../results/velocity_sweep.png Graphic file (type png)
-<use ../results/velocity_sweep.png>
-Package pdftex.def Info: ../results/velocity_sweep.png  used on input line 795.
-
-(pdftex.def)             Requested size: 252.0pt x 269.69911pt.
-[6 <../results/velocity_sweep.png>]
-<../results/offline_full_vs_zshortcut.png, id=420, 794.97pt x 361.35pt>
-File: ../results/offline_full_vs_zshortcut.png Graphic file (type png)
-<use ../results/offline_full_vs_zshortcut.png>
-Package pdftex.def Info: ../results/offline_full_vs_zshortcut.png  used on inpu
-t line 877.
-(pdftex.def)             Requested size: 252.0pt x 114.54263pt.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 953.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 953.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 966.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\tau' on input line 966.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 966.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 966.
-
-[7 <../results/offline_full_vs_zshortcut.png>] [8] (./paper.aux)
+[10 <../results//fig_dhat_sine.png> <../results//fig_robust.png>] [11]
+(./paper.aux)
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 1B5AD13AA1B5A2D24345E716901E5343;8587.
+(rerunfilecheck)             Checksum: 185CA30A11762BA39085B867939B5A1A;5417.
  ) 
 Here is how much of TeX's memory you used:
- 16614 strings out of 480171
- 313796 string characters out of 5894489
- 585419 words of memory out of 5000000
- 34171 multiletter control sequences out of 15000+600000
- 578535 words of font info for 158 fonts, out of 8000000 for 9000
+ 16604 strings out of 480171
+ 315098 string characters out of 5894489
+ 585605 words of memory out of 5000000
+ 34192 multiletter control sequences out of 15000+600000
+ 572794 words of font info for 151 fonts, out of 8000000 for 9000
  63 hyphenation exceptions out of 8191
- 70i,12n,79p,751b,801s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 70i,12n,89p,457b,769s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share/texlive/texmf-dist/
@@ -767,27 +779,25 @@ mi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
 share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb></usr/share/
 texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib9.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw
-/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.
-pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (8 pages, 546502 bytes).
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
+utmri8a.pfb>
+Output written on paper.pdf (11 pages, 2743795 bytes).
 PDF statistics:
- 609 PDF objects out of 1000 (max. 8388607)
- 511 compressed objects within 6 object streams
- 133 named destinations out of 1000 (max. 500000)
- 387 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 569 PDF objects out of 1000 (max. 8388607)
+ 464 compressed objects within 5 object streams
+ 98 named destinations out of 1000 (max. 500000)
+ 314 words of extra memory for PDF output out of 10000 (max. 10000000)
 

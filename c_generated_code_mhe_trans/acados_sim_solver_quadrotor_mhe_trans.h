@@ -37,7 +37,7 @@
 #define QUADROTOR_MHE_TRANS_NX     10
 #define QUADROTOR_MHE_TRANS_NZ     0
 #define QUADROTOR_MHE_TRANS_NU     4
-#define QUADROTOR_MHE_TRANS_NP     34
+#define QUADROTOR_MHE_TRANS_NP     35
 
 #ifdef __cplusplus
 extern "C" {

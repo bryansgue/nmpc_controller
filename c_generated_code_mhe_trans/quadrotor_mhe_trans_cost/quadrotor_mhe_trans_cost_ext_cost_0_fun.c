@@ -70,20 +70,20 @@ casadi_real casadi_sq(casadi_real x) { return x*x;}
 static const casadi_int casadi_s0[3] = {10, 1, 1};
 static const casadi_int casadi_s1[3] = {4, 1, 1};
 static const casadi_int casadi_s2[3] = {0, 1, 1};
-static const casadi_int casadi_s3[3] = {34, 1, 1};
+static const casadi_int casadi_s3[3] = {35, 1, 1};
 static const casadi_int casadi_s4[3] = {1, 1, 1};
 
-static const casadi_real casadi_zeros[34] = 
+static const casadi_real casadi_zeros[35] = 
   {0., 0., 0., 0., 0., 0., 0., 0.,
   0., 0., 0., 0., 0., 0., 0., 0.,
   0., 0., 0., 0., 0., 0., 0., 0.,
   0., 0., 0., 0., 0., 0., 0., 0.,
-  0., 0.};
+  0., 0., 0.};
 
-/* quadrotor_mhe_trans_cost_ext_cost_0_fun:(i0[10],i1[4],i2[0],i3[34])->(o0) */
+/* quadrotor_mhe_trans_cost_ext_cost_0_fun:(i0[10],i1[4],i2[0],i3[35])->(o0) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_int i;
-  casadi_real *rr, w1, *w2=w+35, w4, w5, w6;
+  casadi_real *rr, w1, *w2=w+36, w4, w5, w6;
   const casadi_real *cs, *wr0, *wr3;
   /* #0: @0 = input[3][0] */
   wr0 = arg[3] ? arg[3] : casadi_zeros;
@@ -288,7 +288,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_mhe_trans_cost_ext_cost_0_fun_work(casadi_int
   if (sz_arg) *sz_arg = 6;
   if (sz_res) *sz_res = 2;
   if (sz_iw) *sz_iw = 0;
-  if (sz_w) *sz_w = 44;
+  if (sz_w) *sz_w = 45;
   return 0;
 }
 
@@ -296,7 +296,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_mhe_trans_cost_ext_cost_0_fun_work_bytes(casa
   if (sz_arg) *sz_arg = 6*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 2*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 0*sizeof(casadi_int);
-  if (sz_w) *sz_w = 44*sizeof(casadi_real);
+  if (sz_w) *sz_w = 45*sizeof(casadi_real);
   return 0;
 }
 

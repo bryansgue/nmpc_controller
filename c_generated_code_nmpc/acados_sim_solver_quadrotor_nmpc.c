@@ -186,6 +186,9 @@ int quadrotor_nmpc_acados_sim_create(quadrotor_nmpc_sim_solver_capsule * capsule
     p[3] = 1;
     p[17] = 1.08;
     p[21] = 33.333333333333336;
+    p[25] = 10;
+    p[26] = 10;
+    p[27] = 10;
 
     quadrotor_nmpc_acados_sim_update_params(capsule, p, np);
     free(p);

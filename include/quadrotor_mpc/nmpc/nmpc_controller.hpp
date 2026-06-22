@@ -27,14 +27,17 @@ public:
 
     /// Set reference for a specific shooting node k ∈ [0, N-1]
     /// p_ref: desired position, q_ref: desired quaternion
-    void set_reference(int k, const Vec3& p_ref, const Quat4& q_ref);
+    void set_reference(int k, const Vec3& p_ref, const Quat4& q_ref,
+                       const Vec3& v_ref = Vec3::Zero());
 
     /// Set terminal reference (stage N)
-    void set_reference_terminal(const Vec3& p_ref, const Quat4& q_ref);
+    void set_reference_terminal(const Vec3& p_ref, const Quat4& q_ref,
+                                const Vec3& v_ref = Vec3::Zero());
 
     /// Set cost weights (applied to all stages)
     void set_weights(const Vec3& Q_pos, const Vec3& Q_att,
-                     const Eigen::Vector4d& R_u);
+                     const Eigen::Vector4d& R_u,
+                     const Vec3& Q_vel = Vec3(10.0, 10.0, 10.0));
 
     /// Set adaptive model parameters (injected into the dynamics + cost).
     /// m_hat: estimated mass [kg], d_hat: disturbance accel [m/s²],
@@ -61,7 +64,7 @@ public:
     static const int N;
     static constexpr int NX = 13;
     static constexpr int NU = 4;
-    static constexpr int NP = 22;
+    static constexpr int NP = 28;
 
 private:
     quadrotor_nmpc_solver_capsule* capsule_ = nullptr;
@@ -69,6 +72,7 @@ private:
     // Cached weight values for building parameter vector
     Vec3 Q_pos_ = Vec3(50.0, 50.0, 50.0);
     Vec3 Q_att_ = Vec3(5.0, 5.0, 5.0);
+    Vec3 Q_vel_ = Vec3(10.0, 10.0, 10.0);
     Eigen::Vector4d R_u_ = Eigen::Vector4d(0.1, 0.3, 0.3, 0.3);
 
     // Cached adaptive model parameters (default = nominal)
@@ -76,8 +80,9 @@ private:
     Vec3   d_hat_ = Vec3::Zero();    // [m/s²]
     double k_tau_ = 1.0 / 0.03;      // [1/s]
 
-    /// Build the 22-element parameter vector for a given stage
-    void build_params(double* p, const Vec3& p_ref, const Quat4& q_ref) const;
+    /// Build the 28-element parameter vector for a given stage
+    void build_params(double* p, const Vec3& p_ref, const Quat4& q_ref,
+                      const Vec3& v_ref = Vec3::Zero()) const;
 };
 
 }  // namespace quadrotor_mpc

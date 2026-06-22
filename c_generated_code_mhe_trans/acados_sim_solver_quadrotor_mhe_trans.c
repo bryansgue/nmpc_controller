@@ -197,6 +197,7 @@ int quadrotor_mhe_trans_acados_sim_create(quadrotor_mhe_trans_sim_solver_capsule
     p[28] = 1;
     p[29] = 1;
     p[33] = 9.81;
+    p[34] = 1;
 
     quadrotor_mhe_trans_acados_sim_update_params(capsule, p, np);
     free(p);

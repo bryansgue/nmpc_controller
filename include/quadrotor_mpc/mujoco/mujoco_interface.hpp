@@ -20,6 +20,7 @@
 #include <mujoco_ros_utils/msg/external_force.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <std_srvs/srv/trigger.hpp>
+#include <std_srvs/srv/set_bool.hpp>
 #include <quadrotor_msgs/msg/trpy_command.hpp>
 
 #include <Eigen/Dense>
@@ -37,7 +38,9 @@ struct DroneState {
     Quat4 quat  = Quat4(1,0,0,0);    // [qw,qx,qy,qz]
     Vec3  omega = Vec3::Zero();       // body frame  [rad/s]
     Vec3  accel = Vec3::Zero();       // body frame raw IMU specific force [m/s²] (NOISY)
-    Vec3  ext_force = Vec3::Zero();    // world-frame GROUND-TRUTH external force [N] (validation)
+    Vec3  gyro  = Vec3::Zero();       // body frame IMU gyro [rad/s] (rotational measurement)
+    Vec3  ext_force  = Vec3::Zero();   // world-frame GROUND-TRUTH external force  [N]   (validation)
+    Vec3  ext_torque = Vec3::Zero();   // world-frame GROUND-TRUTH external torque [N·m] (validation)
 
     /// Pack into 13-element vector [p, v, q, ω]
     Eigen::Matrix<double,13,1> to_vector() const {
@@ -70,6 +73,30 @@ public:
     void send_cmd(const AcroCommand& cmd);
     void send_cmd(double thrust, double wx, double wy, double wz);
     void send_zero();
+
+    // ── Estimated disturbance publishing (validation / real-time) ───────
+    // Publishes the estimated external force on /quadrotor/d_hat using the
+    // SAME message type and units (N, world frame) as the ground-truth
+    // /quadrotor/external_force, for a 1-to-1 comparison in PlotJuggler.
+    void publish_dhat(const Vec3& force_world_N);
+
+    // ── Deterministic perturbation injection (controller-defined) ───────
+    // Publishes a commanded external wrench on /quadrotor/external_force_cmd.
+    // MuJoCo applies it and re-publishes it on /quadrotor/external_force, which
+    // is the ground truth the estimator validates against. Because WE define the
+    // signal, the disturbance is fully deterministic and reproducible: send zero
+    // during reset/takeoff, then the designed profile during flight.
+    void publish_ext_force_cmd(const Vec3& force_world_N,
+                               const Vec3& torque_world_Nm = Vec3::Zero());
+
+    // ── Perturbation trigger (deterministic, service-controlled) ────────
+    // The controller exposes /quadrotor/start_perturbation (std_srvs/SetBool):
+    // true → begin injecting the designed force, false → stop. The protocol
+    // calls it at a verified point (after reset + hover) so the disturbance
+    // onset is deterministic and logged; it is also callable externally for
+    // manual demos. The injection itself is gated on perturbation_on().
+    void set_perturbation(bool on) { pert_on_.store(on); }
+    bool perturbation_on() const { return pert_on_.load(); }
 
     // ── PD position hold (background thread) ────────────────────────────
     struct PdGains {
@@ -117,7 +144,11 @@ private:
     rclcpp::Subscription<mujoco_ros_utils::msg::ExternalForce>::SharedPtr extforce_sub_;
     rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr collision_sub_;
     rclcpp::Publisher<quadrotor_msgs::msg::TRPYCommand>::SharedPtr cmd_pub_;
+    rclcpp::Publisher<mujoco_ros_utils::msg::ExternalForce>::SharedPtr dhat_pub_;
+    rclcpp::Publisher<mujoco_ros_utils::msg::ExternalForce>::SharedPtr extcmd_pub_;
     rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr reset_cli_;
+    rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr start_pert_srv_;
+    std::atomic<bool> pert_on_{false};
 };
 
 }  // namespace quadrotor_mpc

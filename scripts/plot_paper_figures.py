@@ -129,11 +129,45 @@ def fig_params(csv):
     fig.savefig(out, dpi=300); print(f"[OK] {out}")
 
 
+# ── Figure: position hold under disturbance (rejection in hover) ──────────────
+def fig_pos(csv, out, title):
+    """Per-axis position deviation from the setpoint vs the applied force.
+    Shows how the controller holds (or not) the hover point while perturbed."""
+    PXr, PYr, PZr = 21, 22, 23  # setpoint columns
+    a = load(csv); t = a[:, T]; run = t < 58
+    s = (t > 1) & (t < 58)
+    e = np.sqrt((a[s, PX]-a[s, PXr])**2 + (a[s, PY]-a[s, PYr])**2
+                + (a[s, PZ]-a[s, PZr])**2)
+    fig, ax = plt.subplots(2, 1, figsize=(7.0, 4.6), sharex=True)
+    # top: per-axis deviation from setpoint [cm]
+    for col, cref, lab, c in [(PX, PXr, "x", "#c0392b"),
+                              (PY, PYr, "y", "#1f6fb4"),
+                              (PZ, PZr, "z", "#27ae60")]:
+        ax[0].plot(t[run], (a[run, col]-a[run, cref])*100, "-", lw=1.4,
+                   color=c, label=fr"$\Delta {lab}$")
+    ax[0].axhline(0, color="k", lw=0.5, ls=":")
+    ax[0].set_ylabel("deviation [cm]")
+    ax[0].legend(loc="upper right", ncol=3, framealpha=0.9)
+    ax[0].set_title(f"{title}   (RMSE = {e.mean()*100:.1f} cm, max = {e.max()*100:.1f} cm)")
+    # bottom: applied ground-truth force [N]
+    for col, lab, c in [(FX, "x", "#c0392b"), (FY, "y", "#1f6fb4"), (FZ, "z", "#27ae60")]:
+        ax[1].plot(t[run], a[run, col], "-", lw=1.2, color=c, label=fr"$F_{lab}$")
+    ax[1].axhline(0, color="k", lw=0.5, ls=":")
+    ax[1].set_ylabel("applied force [N]")
+    ax[1].set_xlabel("time [s]")
+    ax[1].legend(loc="upper right", ncol=3, framealpha=0.9)
+    o = os.path.join(RES, out)
+    fig.savefig(o, dpi=300); print(f"[OK] {o}")
+    print(f"   RMSE pos = {e.mean()*100:.1f} cm   max = {e.max()*100:.1f} cm")
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "filtering":
         fig_filtering(sys.argv[2])
     elif cmd == "force":
         fig_force(sys.argv[2], sys.argv[3], sys.argv[4])
+    elif cmd == "pos":
+        fig_pos(sys.argv[2], sys.argv[3], sys.argv[4])
     elif cmd == "params":
         fig_params(sys.argv[2])

@@ -418,6 +418,9 @@ void quadrotor_nmpc_acados_create_set_default_parameters(quadrotor_nmpc_solver_c
     p[3] = 1;
     p[17] = 1.08;
     p[21] = 33.333333333333336;
+    p[25] = 10;
+    p[26] = 10;
+    p[27] = 10;
 
     for (int i = 0; i <= N; i++) {
         quadrotor_nmpc_acados_update_params(capsule, i, p, NP);
@@ -979,7 +982,7 @@ int quadrotor_nmpc_acados_update_params(quadrotor_nmpc_solver_capsule* capsule, 
 {
     int solver_status = 0;
 
-    int casadi_np = 22;
+    int casadi_np = 28;
     if (casadi_np != np) {
         printf("acados_update_params: trying to set %i parameters for external functions."
             " External function has %i parameters. Exiting.\n", np, casadi_np);

@@ -35,7 +35,7 @@ NU = 4
 DT_CONTROL = 0.01   # [s] control LOOP period (100 Hz) — independent of node dt
 T_HORIZON  = 1.5    # [s] prediction horizon
 N_HORIZON  = 31     # Jetson-runnable; node dt = 1.5/31 ≈ 0.048 s
-N_PARAMS   = 22     # p_ref(3) + q_ref(4) + Q_pos(3) + Q_att(3) + R_u(4) + m̂(1) + d̂(3) + k̂_τ(1)
+N_PARAMS   = 28     # p_ref(3)+q_ref(4)+Q_pos(3)+Q_att(3)+R_u(4)+m̂(1)+d̂(3)+k̂_τ(1) + v_ref(3)+Q_vel(3)
 
 
 def build_quadrotor_model():
@@ -125,6 +125,8 @@ def build_nmpc_ocp():
     Q_att  = p_sym[10:13]
     R_u    = p_sym[13:17]
     m_hat  = p_sym[17]
+    v_ref  = p_sym[22:25]   # reference velocity (feedforward → kills tracking lag at speed)
+    Q_vel  = p_sym[25:28]
 
     # ── Cost function ────────────────────────────────────────────────────────
     ocp.cost.cost_type   = "EXTERNAL"
@@ -132,6 +134,8 @@ def build_nmpc_ocp():
 
     # Position error
     e_pos = model.x[0:3] - p_ref
+    # Velocity error (reference-velocity feedforward → tracks the path at speed)
+    e_vel = model.x[3:6] - v_ref
 
     # Quaternion error: q_err = q_real⁻¹ ⊗ q_desired
     q_real = model.x[6:10]
@@ -163,6 +167,7 @@ def build_nmpc_ocp():
     #   Q_p ∈ R^{3×3},  Q_a ∈ R^{3×3},  R ∈ R^{4×4}
     Q_p = diag(Q_pos)
     Q_a = diag(Q_att)
+    Q_v = diag(Q_vel)
     R   = diag(R_u)
 
     # ── Quadratic cost: e^T W e ───────────────────────────────────────────────
@@ -171,10 +176,12 @@ def build_nmpc_ocp():
     #   ℓ_e(x) = e_pos^T Q_p e_pos  +  log_q^T Q_a log_q
     #
     stage_cost    = (e_pos.T  @ Q_p @ e_pos
+                   + e_vel.T  @ Q_v @ e_vel
                    + log_q.T  @ Q_a @ log_q
                    + u_err.T  @ R   @ u_err)
 
     terminal_cost = (e_pos.T  @ Q_p @ e_pos
+                   + e_vel.T  @ Q_v @ e_vel
                    + log_q.T  @ Q_a @ log_q)
 
     ocp.model.cost_expr_ext_cost   = stage_cost
@@ -186,6 +193,7 @@ def build_nmpc_ocp():
     p_default[3]  = 1.0          # q_ref = identity quaternion [qw=1, ...]
     p_default[17] = MASS         # m̂ default = nominal mass
     p_default[21] = 1.0 / TAU_RC # k̂_τ default = 1/τ_rc nominal
+    p_default[25:28] = 10.0      # Q_vel default
     ocp.parameter_values = p_default
 
     # ── Constraints ──────────────────────────────────────────────────────────

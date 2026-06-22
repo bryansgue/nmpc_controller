@@ -87,19 +87,20 @@ casadi_real casadi_norm_2(casadi_int n, const casadi_real* x) {
 
 static const casadi_int casadi_s0[3] = {13, 1, 1};
 static const casadi_int casadi_s1[3] = {4, 1, 1};
-static const casadi_int casadi_s2[3] = {22, 1, 1};
+static const casadi_int casadi_s2[3] = {28, 1, 1};
 
 static const casadi_real casadi_c0[9] = 
   {1., 0., 0., 0., 1., 0., 0., 0.,
   1.};
 static const casadi_real casadi_c1[3] = {0., 0., 1.};
 
-static const casadi_real casadi_zeros[22] = 
+static const casadi_real casadi_zeros[28] = 
   {0., 0., 0., 0., 0., 0., 0., 0.,
   0., 0., 0., 0., 0., 0., 0., 0.,
-  0., 0., 0., 0., 0., 0.};
+  0., 0., 0., 0., 0., 0., 0., 0.,
+  0., 0., 0., 0.};
 
-/* quadrotor_nmpc_expl_ode_fun:(i0[13],i1[4],i2[22])->(o0[13]) */
+/* quadrotor_nmpc_expl_ode_fun:(i0[13],i1[4],i2[28])->(o0[13]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_int i, j, k;
   casadi_real *rr, *w00=w+3, *w01=w+6, *w02=w+15, *w03=w+24, w04, w05, *w06=w+30, w07, w08, *w09=w+41, *w10=w+50;
@@ -345,7 +346,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_nmpc_expl_ode_fun_work(casadi_int *sz_arg, ca
   if (sz_arg) *sz_arg = 7;
   if (sz_res) *sz_res = 2;
   if (sz_iw) *sz_iw = 0;
-  if (sz_w) *sz_w = 87;
+  if (sz_w) *sz_w = 93;
   return 0;
 }
 
@@ -353,7 +354,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_nmpc_expl_ode_fun_work_bytes(casadi_int *sz_a
   if (sz_arg) *sz_arg = 7*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 2*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 0*sizeof(casadi_int);
-  if (sz_w) *sz_w = 87*sizeof(casadi_real);
+  if (sz_w) *sz_w = 93*sizeof(casadi_real);
   return 0;
 }
 

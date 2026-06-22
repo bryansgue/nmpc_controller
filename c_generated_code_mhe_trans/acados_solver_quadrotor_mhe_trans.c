@@ -429,6 +429,7 @@ void quadrotor_mhe_trans_acados_create_set_default_parameters(quadrotor_mhe_tran
     p[28] = 1;
     p[29] = 1;
     p[33] = 9.81;
+    p[34] = 1;
 
     for (int i = 0; i <= N; i++) {
         quadrotor_mhe_trans_acados_update_params(capsule, i, p, NP);
@@ -569,12 +570,12 @@ void quadrotor_mhe_trans_acados_setup_nlp_in(quadrotor_mhe_trans_solver_capsule*
     // change only the non-zero elements:
     lbx0[0] = 0.5;
     ubx0[0] = 3;
-    lbx0[1] = -5;
-    ubx0[1] = 5;
-    lbx0[2] = -5;
-    ubx0[2] = 5;
-    lbx0[3] = -5;
-    ubx0[3] = 5;
+    lbx0[1] = -2;
+    ubx0[1] = 2;
+    lbx0[2] = -2;
+    ubx0[2] = 2;
+    lbx0[3] = -2;
+    ubx0[3] = 2;
 
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, nlp_out, 0, "idxbx", idxbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, nlp_out, 0, "lbx", lbx0);
@@ -639,12 +640,12 @@ void quadrotor_mhe_trans_acados_setup_nlp_in(quadrotor_mhe_trans_solver_capsule*
     double* ubx = lubx + NBX;
     lbx[0] = 0.5;
     ubx[0] = 3;
-    lbx[1] = -5;
-    ubx[1] = 5;
-    lbx[2] = -5;
-    ubx[2] = 5;
-    lbx[3] = -5;
-    ubx[3] = 5;
+    lbx[1] = -2;
+    ubx[1] = 2;
+    lbx[2] = -2;
+    ubx[2] = 2;
+    lbx[3] = -2;
+    ubx[3] = 2;
 
     for (int i = 1; i < N; i++)
     {
@@ -681,12 +682,12 @@ void quadrotor_mhe_trans_acados_setup_nlp_in(quadrotor_mhe_trans_solver_capsule*
     double* ubx_e = lubx_e + NBXN;
     lbx_e[0] = 0.5;
     ubx_e[0] = 3;
-    lbx_e[1] = -5;
-    ubx_e[1] = 5;
-    lbx_e[2] = -5;
-    ubx_e[2] = 5;
-    lbx_e[3] = -5;
-    ubx_e[3] = 5;
+    lbx_e[1] = -2;
+    ubx_e[1] = 2;
+    lbx_e[2] = -2;
+    ubx_e[2] = 2;
+    lbx_e[3] = -2;
+    ubx_e[3] = 2;
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, nlp_out, N, "idxbx", idxbx_e);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, nlp_out, N, "lbx", lbx_e);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, nlp_out, N, "ubx", ubx_e);
@@ -1012,7 +1013,7 @@ int quadrotor_mhe_trans_acados_update_params(quadrotor_mhe_trans_solver_capsule*
 {
     int solver_status = 0;
 
-    int casadi_np = 34;
+    int casadi_np = 35;
     if (casadi_np != np) {
         printf("acados_update_params: trying to set %i parameters for external functions."
             " External function has %i parameters. Exiting.\n", np, casadi_np);

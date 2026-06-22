@@ -249,6 +249,23 @@ if(EXISTS ${MHE_TRANS_DIR}/acados_solver_quadrotor_mhe_trans.c)
     message(STATUS "mhe_trans (translational-only) configured")
 endif()
 
+# ── MHE-D solver (9D, mass=param — EXP-2 disturbance-only) ───────────────────
+set(MHE_TRANS_D_DIR ${CMAKE_CURRENT_SOURCE_DIR}/c_generated_code_mhe_trans_d)
+if(EXISTS ${MHE_TRANS_D_DIR}/acados_solver_quadrotor_mhe_trans_d.c)
+    file(GLOB MHE_TRANS_D_MODEL  ${MHE_TRANS_D_DIR}/quadrotor_mhe_trans_d_model/*.c)
+    file(GLOB MHE_TRANS_D_COST   ${MHE_TRANS_D_DIR}/quadrotor_mhe_trans_d_cost/*.c)
+    file(GLOB MHE_TRANS_D_CONSTR ${MHE_TRANS_D_DIR}/quadrotor_mhe_trans_d_constraints/*.c)
+    add_library(mhe_trans_d_solver STATIC
+        ${MHE_TRANS_D_DIR}/acados_solver_quadrotor_mhe_trans_d.c
+        ${MHE_TRANS_D_MODEL} ${MHE_TRANS_D_COST} ${MHE_TRANS_D_CONSTR})
+    target_include_directories(mhe_trans_d_solver PUBLIC
+        ${MHE_TRANS_D_DIR} ${ACADOS_INCLUDE_DIR} ${ACADOS_INCLUDE_DIR}/acados
+        ${ACADOS_INCLUDE_DIR}/blasfeo/include ${ACADOS_INCLUDE_DIR}/hpipm/include)
+    target_link_libraries(mhe_trans_d_solver PUBLIC
+        ${ACADOS_LIB_DIR}/libacados.so ${ACADOS_LIB_DIR}/libblasfeo.so ${ACADOS_LIB_DIR}/libhpipm.so m)
+    message(STATUS "mhe_trans_d (disturbance-only, 9D) configured")
+endif()
+
 # ── NMPC-MHE solver (18D, thrust-as-input) ────────────────────────────────────
 set(MHE_NMPC_CODEGEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/c_generated_code_mhe_nmpc)
 if(EXISTS ${MHE_NMPC_CODEGEN_DIR}/acados_solver_quadrotor_mhe_nmpc.c)

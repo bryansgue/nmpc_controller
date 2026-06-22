@@ -1,0 +1,39 @@
+# Project prose ledger — "Observability-Aware Virtual Force Sensing and
+# Self-Calibration for Quadrotors" (target: IEEE Sensors Journal).
+# Lo lee el plugin ral-reviewer (lint_prose.py) por walk-up desde el .tex.
+# Formato:  term => replacement   (HARD: bloquea, exit 2) ; tras [soft] = advisory.
+#
+# OJO: ortografia americana (-ize), AI-tells genericos (delve, leverage, seamless...),
+# em-dash "---" en prosa y bugs de gramatica los aplica el MOTOR GENERAL del plugin
+# — NO van aca. Aca solo la jerga acunada/coloquial de ESTE paper de sensor virtual.
+# Mantenerlo chico y de alta precision: una palabra comun en HARD = bloqueos molestos.
+#
+# Lexico VALIDO de este tema (NO banear): virtual force sensor, specific force,
+# observability-aware, self-calibration, identifiability, Fisher information,
+# Cramer-Rao bound, Schur complement, Gramian, lumped (lumped-parameter), arrival
+# cost, moving-horizon, momentum observer, persistency of excitation, random walk.
+
+# ---- HARD (acunado/coloquial; bloquea — alta precision, nunca legitimo en IEEE) ----
+killer experiment   => (drop; describir el resultado en prosa formal)
+family-optimal      => "most informative (within the family)"  (acunado mio; ya removido)
+info-optimal        => "most informative" / "information-maximizing within the family"
+information-optimal => "most informative" / "information-maximizing within the family"
+whatever            => any / the  (coloquial; nunca en prosa formal)
+ingredient          => element / component / term
+ingredients         => elements / components
+
+# ---- SOFT (ambiguo; advisory — revisar vs ref_corpus antes de aprobar) ----
+[soft]
+close the loop  => closed-loop validation (el adjetivo "closed-loop" si es valido)
+closed the loop => closed-loop validation
+sweet spot      => operating regime / operating point
+absorbs         => compensates / rejects (anthropomorfico al hablar de d/sesgo)
+absorbed        => compensated / rejected
+wanders         => drifts (estandar de estimacion)
+wander          => drift
+outrun          => exceed / outpace the bandwidth
+outruns         => exceeds
+trusts          => weights / relies on (anthropomorfico para un estimador)
+trustworthy     => reliable / valid
+blindly         => unconditionally / without an observability check
+gentle          => benign / low-excitation (cuando describe el vuelo/maniobra)

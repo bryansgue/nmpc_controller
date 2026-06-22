@@ -29,26 +29,45 @@ bool SilProtocol::reload_() {
     // Send hover thrust (mass·g) so the drone doesn't fall
     muj_->send_cmd(cfg_.mass * cfg_.gravity, 0.0, 0.0, 0.0);
 
-    // Reset simulator
-    bool ok = muj_->reset_sim();
-    if (!ok) {
-        RCLCPP_ERROR(muj_->get_logger(), "[PROTOCOL] Simulator reset failed!");
-        return false;
+    // The MuJoCo reset gremlin: the service may return success but leave the
+    // drone in a bad state (flying off / not level). So RETRY and VERIFY the
+    // landed state (near origin, on the floor, level) before proceeding.
+    const int MAX_TRIES = 6;
+    for (int attempt = 1; attempt <= MAX_TRIES; ++attempt) {
+        if (!muj_->reset_sim()) {
+            RCLCPP_WARN(muj_->get_logger(),
+                "[PROTOCOL] reset service failed (try %d/%d), retrying...",
+                attempt, MAX_TRIES);
+            std::this_thread::sleep_for(300ms);
+            continue;
+        }
+        muj_->clear_crash();
+        std::this_thread::sleep_for(200ms);   // let fresh odom flow
+        muj_->clear_crash();
+        if (!muj_->is_connected() && !muj_->wait_for_connection()) {
+            RCLCPP_WARN(muj_->get_logger(),
+                "[PROTOCOL] no odom after reset (try %d/%d)", attempt, MAX_TRIES);
+            continue;
+        }
+        // VERIFY: drone must be near origin, on the floor, level.
+        DroneState s = muj_->get_state();
+        bool clean = (std::fabs(s.pos.x()) < 0.6 && std::fabs(s.pos.y()) < 0.6
+                      && s.pos.z() < 0.15 && std::fabs(s.quat(0)) > 0.95);
+        if (clean) {
+            RCLCPP_INFO(muj_->get_logger(),
+                "[PROTOCOL] RELOAD complete — verified clean (try %d): "
+                "z=%.3f qw=%.3f", attempt, s.pos.z(), s.quat(0));
+            return true;
+        }
+        RCLCPP_WARN(muj_->get_logger(),
+            "[PROTOCOL] reset NOT clean (try %d/%d): z=%.2f qw=%.3f — retrying",
+            attempt, MAX_TRIES, s.pos.z(), s.quat(0));
+        std::this_thread::sleep_for(300ms);
     }
-
-    // Clear crash flag (ground contact after reset triggers it)
-    muj_->clear_crash();
-
-    // Wait for fresh odom after reset
-    std::this_thread::sleep_for(200ms);
-    muj_->clear_crash();  // clear again after odom starts flowing
-
-    if (!muj_->is_connected()) {
-        if (!muj_->wait_for_connection()) return false;
-    }
-
-    RCLCPP_INFO(muj_->get_logger(), "[PROTOCOL] RELOAD complete — simulator ready");
-    return true;
+    RCLCPP_ERROR(muj_->get_logger(),
+        "[PROTOCOL] RELOAD failed — could not reach a clean state in %d tries",
+        MAX_TRIES);
+    return false;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

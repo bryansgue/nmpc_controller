@@ -125,6 +125,12 @@ int main()
     p[19] = 0;
     p[20] = 0;
     p[21] = 33.333333333333336;
+    p[22] = 0;
+    p[23] = 0;
+    p[24] = 0;
+    p[25] = 10;
+    p[26] = 10;
+    p[27] = 10;
 
     quadrotor_nmpc_acados_sim_update_params(capsule, p, NP);
   

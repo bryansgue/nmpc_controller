@@ -19,6 +19,10 @@ MujocoInterface::MujocoInterface(
     : Node(node_name)
 {
     cmd_pub_ = create_publisher<quadrotor_msgs::msg::TRPYCommand>(cmd_topic, 10);
+    dhat_pub_ = create_publisher<mujoco_ros_utils::msg::ExternalForce>(
+        "/quadrotor/d_hat", 10);
+    extcmd_pub_ = create_publisher<mujoco_ros_utils::msg::ExternalForce>(
+        "/quadrotor/external_force_cmd", 10);
 
     odom_sub_ = create_subscription<nav_msgs::msg::Odometry>(
         odom_topic, 10,
@@ -37,6 +41,18 @@ MujocoInterface::MujocoInterface(
         std::bind(&MujocoInterface::collision_cb_, this, std::placeholders::_1));
 
     reset_cli_ = create_client<std_srvs::srv::Trigger>("/quadrotor/sim/reset");
+
+    // Deterministic perturbation trigger: external callers (or the protocol) flip
+    // the injected disturbance on/off through this service.
+    start_pert_srv_ = create_service<std_srvs::srv::SetBool>(
+        "/quadrotor/start_perturbation",
+        [this](const std::shared_ptr<std_srvs::srv::SetBool::Request> req,
+               std::shared_ptr<std_srvs::srv::SetBool::Response> res) {
+            pert_on_.store(req->data);
+            res->success = true;
+            res->message = req->data ? "perturbation ON" : "perturbation OFF";
+            RCLCPP_INFO(get_logger(), "[PERTURB] %s", res->message.c_str());
+        });
 
     RCLCPP_INFO(get_logger(), "MujocoInterface ready  odom=%s  cmd=%s",
                 odom_topic.c_str(), cmd_topic.c_str());
@@ -63,12 +79,15 @@ void MujocoInterface::odom_cb_(const nav_msgs::msg::Odometry::SharedPtr msg) {
 void MujocoInterface::imu_cb_(const sensor_msgs::msg::Imu::SharedPtr msg) {
     std::lock_guard<std::mutex> lk(state_mtx_);
     auto& acc = msg->linear_acceleration;   // body frame, raw (noisy), includes gravity
+    auto& gyr = msg->angular_velocity;       // body frame gyro [rad/s]
     state_.accel << acc.x, acc.y, acc.z;
+    state_.gyro  << gyr.x, gyr.y, gyr.z;
 }
 
 void MujocoInterface::extforce_cb_(const mujoco_ros_utils::msg::ExternalForce::SharedPtr msg) {
     std::lock_guard<std::mutex> lk(state_mtx_);
-    state_.ext_force << msg->force.x, msg->force.y, msg->force.z;   // world frame [N], GROUND TRUTH
+    state_.ext_force  << msg->force.x,  msg->force.y,  msg->force.z;    // world frame [N],   GROUND TRUTH
+    state_.ext_torque << msg->torque.x, msg->torque.y, msg->torque.z;  // world frame [N·m], GROUND TRUTH
 }
 
 void MujocoInterface::collision_cb_(const std_msgs::msg::Bool::SharedPtr msg) {
@@ -106,6 +125,27 @@ void MujocoInterface::send_cmd(double thrust, double wx, double wy, double wz) {
 }
 
 void MujocoInterface::send_zero() { send_cmd(0.0, 0.0, 0.0, 0.0); }
+
+void MujocoInterface::publish_dhat(const Vec3& force_world_N) {
+    auto msg = mujoco_ros_utils::msg::ExternalForce();
+    msg.force.x = force_world_N.x();
+    msg.force.y = force_world_N.y();
+    msg.force.z = force_world_N.z();
+    dhat_pub_->publish(msg);
+}
+
+void MujocoInterface::publish_ext_force_cmd(const Vec3& force_world_N,
+                                            const Vec3& torque_world_Nm) {
+    auto msg = mujoco_ros_utils::msg::ExternalForce();
+    // duration 0 → persistent until the next command (we re-publish every step)
+    msg.force.x  = force_world_N.x();
+    msg.force.y  = force_world_N.y();
+    msg.force.z  = force_world_N.z();
+    msg.torque.x = torque_world_Nm.x();
+    msg.torque.y = torque_world_Nm.y();
+    msg.torque.z = torque_world_Nm.z();
+    extcmd_pub_->publish(msg);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  Simulator reset

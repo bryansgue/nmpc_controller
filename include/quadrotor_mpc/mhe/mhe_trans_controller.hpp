@@ -4,15 +4,16 @@
  *
  * State x ∈ ℝ¹⁰ = [p(3), v(3), m, d(3)]   (NO quaternion, NO ω → robust)
  * Process noise w ∈ ℝ⁴ = [w_m, w_d(3)]
- * Known inputs (params): T (thrust), a = R·e3 (world thrust direction, from the
- *   MEASURED quaternion). Attitude is measured, not estimated.
+ * Known inputs (params): T (thrust), a = R·e3 (from the MEASURED quaternion).
  *
- * Runtime params p ∈ ℝ³⁰:
+ * Runtime params p ∈ ℝ³⁴:
  *   p[0:6]   = y_k  [p(3), v(3)]
  *   p[6]     = T
  *   p[7:10]  = a
  *   p[10:20] = x̄  prior (10D)
- *   p[20:30] = P̄_inv (10D, Euclidean)
+ *   p[20:30] = P̄_inv (10D)
+ *   p[30]    = c_drag
+ *   p[31:34] = sf_meas (accelerometer)
  */
 #include "quadrotor_mpc/common/types.hpp"
 #include <Eigen/Dense>
@@ -44,10 +45,11 @@ public:
     static const int N  = 31;
     static const int NX = 10;
     static const int NU = 4;
-    static const int NP = 34;
+    static const int NP = 35;
 
-    /// Fixed quadratic-drag acceleration coefficient (a_drag = -c·v·|v|).
     void set_drag(double c) { drag_c_ = c; }
+    void freeze_mass(double m);
+    void freeze_disturbance();
 
     MheTransController();
     ~MheTransController();
@@ -56,9 +58,8 @@ public:
     void reset(const MheTransEstimate& x0_prior,
                const Eigen::Matrix<double,10,1>& P_bar_diag);
 
-    /// y = [p(3), v(3)] (6D); inputs T (thrust) and a = R·e3 (world dir).
     void push(const Eigen::Matrix<double,6,1>& y_k, double T, const Vec3& a,
-              const Vec3& sf_meas = Vec3(0, 0, 9.81));
+              const Vec3& sf_meas = Vec3(0, 0, 9.81), double meas_mask = 1.0);
 
     int solve();
     MheTransEstimate get_estimate() const;
@@ -72,7 +73,8 @@ private:
     std::deque<Eigen::Matrix<double,6,1>> y_win_;
     std::deque<double>                    T_win_;
     std::deque<Vec3>                      a_win_;
-    std::deque<Vec3>                      sf_win_;   // IMU specific force R·a_imu
+    std::deque<Vec3>                      sf_win_;
+    std::deque<double>                    mask_win_;   // per-node odometry mask
 
     State10                    x_bar_;
     Eigen::Matrix<double,10,1> P_bar_inv_;
@@ -80,10 +82,10 @@ private:
 
     double sigma_k_      = 1e6;
     double solve_time_s_ = 0.0;
-    double drag_c_       = 0.0;   // quadratic drag coeff
+    double drag_c_       = 0.0;
     static constexpr double Q_W_M = 1e-4;
     static constexpr double Q_W_D = 1e-3;
-    static constexpr double DT    = 0.01;   // 10 ms grid = control period → pure 100 Hz
+    static constexpr double DT    = 0.01;
     static constexpr double P_MIN_PHYS  = 1e-4;
     static constexpr double P_MIN_PARAM = 1e-3;
 

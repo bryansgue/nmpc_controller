@@ -203,7 +203,7 @@ static const casadi_int casadi_s5[3] = {13, 1, 1};
 static const casadi_int casadi_s6[3] = {13, 13, 1};
 static const casadi_int casadi_s7[3] = {13, 4, 1};
 static const casadi_int casadi_s8[3] = {4, 1, 1};
-static const casadi_int casadi_s9[3] = {22, 1, 1};
+static const casadi_int casadi_s9[3] = {28, 1, 1};
 
 static const casadi_real casadi_c0[9] = 
   {1., 0., 0., 0., 1., 0., 0., 0.,
@@ -234,14 +234,14 @@ static const casadi_real casadi_zeros[169] =
   0., 0., 0., 0., 0., 0., 0., 0.,
   0.};
 
-/* quadrotor_nmpc_expl_vde_forw:(i0[13],i1[13x13],i2[13x4],i3[4],i4[22])->(o0[13],o1[13x13],o2[13x4]) */
+/* quadrotor_nmpc_expl_vde_forw:(i0[13],i1[13x13],i2[13x4],i3[4],i4[28])->(o0[13],o1[13x13],o2[13x4]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_int i, j, k;
   casadi_real *rr, *w00=w+3, *w01=w+6, *w02=w+15, *w03=w+24, w04, w05, *w06=w+30, w07, w08, *w09=w+41, *w10=w+50;
-  casadi_real *w11=w+59, w12, w13, w14, *w15=w+66, *w16=w+69, *w18=w+94, w19, w20, w21, w22, w23;
-  casadi_real w24, w25, w26, w27, w28, *w29=w+107, *w40=w+397, *w41=w+410, *w42=w+423, *w43=w+436, *w44=w+449, *w45=w+458;
-  casadi_real *w46=w+467, *w47=w+476, *w48=w+480, w49, w50, w51, w52, w53, w54, w55, w56, *w57=w+492;
-  casadi_real *w60=w+498, *w61=w+504, *w62=w+510, *w63=w+562, *w64=w+614;
+  casadi_real *w11=w+59, w12, w13, w14, *w15=w+66, *w16=w+69, *w18=w+100, w19, w20, w21, w22, w23;
+  casadi_real w24, w25, w26, w27, w28, *w29=w+113, *w40=w+403, *w41=w+416, *w42=w+429, *w43=w+442, *w44=w+455, *w45=w+464;
+  casadi_real *w46=w+473, *w47=w+482, *w48=w+486, w49, w50, w51, w52, w53, w54, w55, w56, *w57=w+498;
+  casadi_real *w60=w+504, *w61=w+510, *w62=w+516, *w63=w+568, *w64=w+620;
   const casadi_real *cr, *cs, *ct, *wr01, *wr16, *wr17, *wr18, *wr29, *wr30, *wr31, *wr32, *wr33;
   const casadi_real *wr34, *wr35, *wr36, *wr37, *wr38, *wr39, *wr40, *wr41, *wr42, *wr43, *wr63, *wr64;
   /* #0: @0 = input[0][1] */
@@ -3849,7 +3849,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_nmpc_expl_vde_forw_work(casadi_int *sz_arg, c
   if (sz_arg) *sz_arg = 9;
   if (sz_res) *sz_res = 16;
   if (sz_iw) *sz_iw = 5;
-  if (sz_w) *sz_w = 617;
+  if (sz_w) *sz_w = 623;
   return 0;
 }
 
@@ -3857,7 +3857,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_nmpc_expl_vde_forw_work_bytes(casadi_int *sz_
   if (sz_arg) *sz_arg = 9*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 16*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 5*sizeof(casadi_int);
-  if (sz_w) *sz_w = 617*sizeof(casadi_real);
+  if (sz_w) *sz_w = 623*sizeof(casadi_real);
   return 0;
 }
 

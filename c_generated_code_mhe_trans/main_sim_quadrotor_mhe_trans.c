@@ -76,9 +76,9 @@ int main()
 
   
     x_current[6] = 0.5;
-    x_current[7] = -5;
-    x_current[8] = -5;
-    x_current[9] = -5;
+    x_current[7] = -2;
+    x_current[8] = -2;
+    x_current[9] = -2;
     
     printf("main_sim: NOTE: initial state not fully defined via lbx_0, using 0.0 for indices that are not in idxbx_0.");
   
@@ -126,6 +126,7 @@ int main()
     p[31] = 0;
     p[32] = 0;
     p[33] = 9.81;
+    p[34] = 1;
 
     quadrotor_mhe_trans_acados_sim_update_params(capsule, p, NP);
   

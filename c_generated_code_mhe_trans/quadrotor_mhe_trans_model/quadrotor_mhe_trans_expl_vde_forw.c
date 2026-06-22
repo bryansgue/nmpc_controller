@@ -147,7 +147,7 @@ static const casadi_int casadi_s4[3] = {10, 1, 1};
 static const casadi_int casadi_s5[3] = {10, 10, 1};
 static const casadi_int casadi_s6[3] = {10, 4, 1};
 static const casadi_int casadi_s7[3] = {4, 1, 1};
-static const casadi_int casadi_s8[3] = {34, 1, 1};
+static const casadi_int casadi_s8[3] = {35, 1, 1};
 static const casadi_int casadi_s9[73] = 
   {10, 10, 0, 6, 12, 18, 24, 30,
   36, 42, 48, 54, 60, 0, 1, 2,
@@ -177,11 +177,11 @@ static const casadi_real casadi_zeros[100] =
   0., 0., 0., 0., 0., 0., 0., 0.,
   0., 0., 0., 0.};
 
-/* quadrotor_mhe_trans_expl_vde_forw:(i0[10],i1[10x10],i2[10x4],i3[4],i4[34])->(o0[10],o1[10x10,60nz],o2[10x4,28nz]) */
+/* quadrotor_mhe_trans_expl_vde_forw:(i0[10],i1[10x10],i2[10x4],i3[4],i4[35])->(o0[10],o1[10x10,60nz],o2[10x4,28nz]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_int i;
-  casadi_real *rr, *w00=w+10, w01, *w02=w+14, w04, *w05=w+52, *w06=w+55, w07, w08, w09, *w10=w+61, *w22=w+264;
-  casadi_real w23, *w24=w+268, *w26=w+272, *w27=w+276, *w28=w+280, *w30=w+348, *w32=w+351, *w33=w+357, *w34=w+363, *w35=w+369, *w36=w+375, *w37=w+399;
+  casadi_real *rr, *w00=w+10, w01, *w02=w+14, w04, *w05=w+53, *w06=w+56, w07, w08, w09, *w10=w+62, *w22=w+265;
+  casadi_real w23, *w24=w+269, *w26=w+273, *w27=w+277, *w28=w+281, *w30=w+349, *w32=w+352, *w33=w+358, *w34=w+364, *w35=w+370, *w36=w+376, *w37=w+400;
   const casadi_real *cr, *cs, *wr02, *wr03, *wr05, *wr10, *wr11, *wr12, *wr13, *wr14, *wr15, *wr16;
   const casadi_real *wr17, *wr18, *wr19, *wr20, *wr21, *wr22, *wr29;
   /* #0: @0 = input[0][1] */
@@ -828,7 +828,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_mhe_trans_expl_vde_forw_work(casadi_int *sz_a
   if (sz_arg) *sz_arg = 9;
   if (sz_res) *sz_res = 13;
   if (sz_iw) *sz_iw = 5;
-  if (sz_w) *sz_w = 427;
+  if (sz_w) *sz_w = 428;
   return 0;
 }
 
@@ -836,7 +836,7 @@ CASADI_SYMBOL_EXPORT int quadrotor_mhe_trans_expl_vde_forw_work_bytes(casadi_int
   if (sz_arg) *sz_arg = 9*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 13*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 5*sizeof(casadi_int);
-  if (sz_w) *sz_w = 427*sizeof(casadi_real);
+  if (sz_w) *sz_w = 428*sizeof(casadi_real);
   return 0;
 }
 
