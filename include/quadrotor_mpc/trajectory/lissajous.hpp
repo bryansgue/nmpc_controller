@@ -11,7 +11,7 @@ namespace quadrotor_mpc {
 ///   z(t) = Az*sin(3*w*t) + Cz
 class LissajousTrajectory {
 public:
-    double w  = 2.0;    // base frequency [rad/s]
+    double w  = 0.8;    // base frequency [rad/s]
     double Ax = 5.0, Ay = 1.25, Az = 0.75;
     double Cx = 2.5, Cz = 1.5;
     double t_final = 63.0;  // parametric interval [s]

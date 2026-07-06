@@ -2,8 +2,8 @@
 /**
  * SiL Protocol — Standard execution sequence for MuJoCo simulations.
  *
- * Reusable by NMPC, MPCC, DQ-MPCC. The controller only needs to provide
- * a callback that receives the current state and returns a command.
+ * The controller only needs to provide a callback that receives the current
+ * state and returns a command.
  *
  * Protocol:
  *   1. RELOAD  — reset simulator, clear crash flag, wait for odom

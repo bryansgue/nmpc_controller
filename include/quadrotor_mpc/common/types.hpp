@@ -8,17 +8,6 @@ namespace quadrotor_mpc {
 using State13  = Eigen::Matrix<double, 13, 1>;
 using Control4 = Eigen::Matrix<double, 4, 1>;
 
-// MPCC: 15 states [p(3), v(3), q(4), ω(3), θ, vθ], 5 controls [T, ωx, ωy, ωz, aθ]
-using State15  = Eigen::Matrix<double, 15, 1>;
-using Control5 = Eigen::Matrix<double, 5, 1>;
-
-// MPCC with thrust-as-state: 16 states [p(3), v(3), q(4), ω(3), θ, v_θ, f]
-// DQ-MPCC: 16 states [dq(8), ω(3), vb(3), θ, vθ]
-using State16  = Eigen::Matrix<double, 16, 1>;
-
-// MHE augmented: 21 states [p(3), v(3), q(4), ω(3), θ, v_θ, f, m, τ_rc, d(3)]
-using State21  = Eigen::Matrix<double, 21, 1>;
-
 // Quaternion [qw, qx, qy, qz]
 using Quat4 = Eigen::Vector4d;
 

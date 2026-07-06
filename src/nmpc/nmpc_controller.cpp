@@ -8,7 +8,7 @@
 
 namespace quadrotor_mpc {
 
-// N comes from the generated solver (QUADROTOR_NMPC_N = T_HORIZON / DT_CONTROL)
+// N comes from the generated solver (QUADROTOR_NMPC_N = N_HORIZON = 31; node dt = T_HORIZON/N ≈ 0.048 s)
 const int NmpcController::N = QUADROTOR_NMPC_N;
 
 NmpcController::NmpcController() = default;
@@ -44,18 +44,14 @@ void NmpcController::set_x0(const State13& x0) {
 
 void NmpcController::build_params(double* p, const Vec3& p_ref, const Quat4& q_ref,
                                   const Vec3& v_ref) const {
-    // p = [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), m̂(1), d̂(3), k̂_τ(1),
-    //      v_ref(3), Q_vel(3)]  → 28
+    // p = [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), v_ref(3), Q_vel(3)]
     p[0]  = p_ref(0);  p[1]  = p_ref(1);  p[2]  = p_ref(2);
     p[3]  = q_ref(0);  p[4]  = q_ref(1);  p[5]  = q_ref(2);  p[6]  = q_ref(3);
     p[7]  = Q_pos_(0); p[8]  = Q_pos_(1); p[9]  = Q_pos_(2);
     p[10] = Q_att_(0); p[11] = Q_att_(1); p[12] = Q_att_(2);
     p[13] = R_u_(0);   p[14] = R_u_(1);   p[15] = R_u_(2);   p[16] = R_u_(3);
-    p[17] = m_hat_;
-    p[18] = d_hat_(0); p[19] = d_hat_(1); p[20] = d_hat_(2);
-    p[21] = k_tau_;
-    p[22] = v_ref(0);  p[23] = v_ref(1);  p[24] = v_ref(2);
-    p[25] = Q_vel_(0); p[26] = Q_vel_(1); p[27] = Q_vel_(2);
+    p[17] = v_ref(0);  p[18] = v_ref(1);  p[19] = v_ref(2);
+    p[20] = Q_vel_(0); p[21] = Q_vel_(1); p[22] = Q_vel_(2);
 }
 
 void NmpcController::set_reference(int k, const Vec3& p_ref, const Quat4& q_ref,
@@ -78,12 +74,6 @@ void NmpcController::set_weights(const Vec3& Q_pos, const Vec3& Q_att,
     Q_att_ = Q_att;
     R_u_   = R_u;
     Q_vel_ = Q_vel;
-}
-
-void NmpcController::set_model_params(double m_hat, const Vec3& d_hat, double k_tau) {
-    m_hat_ = m_hat;
-    d_hat_ = d_hat;
-    k_tau_ = k_tau;
 }
 
 int NmpcController::solve() {

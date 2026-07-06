@@ -66,13 +66,14 @@ int main(int argc, char** argv)
     RCLCPP_INFO(muj->get_logger(), "Building Lissajous trajectory (temporal)...");
     LissajousTrajectory liss;
     const double dt_ctrl = nmpc_p.dt;     // control period [s]
+    const double dt_node = nmpc_p.node_dt(NmpcController::N);
     const double t_traj  = (t_run_arg > 0.0)
                            ? std::min(t_run_arg, liss.t_final)
                            : liss.t_final;
 
     RCLCPP_INFO(muj->get_logger(),
-        "Trajectory: t_run=%.1f s (liss.t_final=%.1f s), dt=%.3f s, N_horizon=%d",
-        t_traj, liss.t_final, dt_ctrl, NmpcController::N);
+        "Trajectory: t_run=%.1f s (liss.t_final=%.1f s), dt_ctrl=%.3f s, dt_node=%.3f s, N_horizon=%d",
+        t_traj, liss.t_final, dt_ctrl, dt_node, NmpcController::N);
 
     // ── Init NMPC solver ────────────────────────────────────────────────
     RCLCPP_INFO(muj->get_logger(), "Initialising NMPC solver...");
@@ -115,7 +116,7 @@ int main(int argc, char** argv)
             Quat4 q_ref_prev = ds.quat;  // start hemisphere from current attitude
 
             for (int j = 0; j <= NmpcController::N; ++j) {
-                double t_j = std::min(t_elapsed + j * dt_ctrl, t_traj);
+                double t_j = std::min(t_elapsed + j * dt_node, t_traj);
                 Vec3  pr = liss.position(t_j);
                 Vec3  vr = liss.velocity(t_j);
                 Vec3  ar = liss.acceleration(t_j);
@@ -124,9 +125,9 @@ int main(int argc, char** argv)
                 q_ref_prev = qr;
 
                 if (j < NmpcController::N)
-                    ctrl.set_reference(j, pr, qr);
+                    ctrl.set_reference(j, pr, qr, vr);
                 else
-                    ctrl.set_reference_terminal(pr, qr);
+                    ctrl.set_reference_terminal(pr, qr, vr);
 
                 if (j == 0) { out.p_ref = pr; out.q_ref = qr; }
             }

@@ -1,15 +1,15 @@
 """
-Generate acados C code for a quadrotor NMPC (waypoint tracking).
+Generate acados C code for a nominal quadrotor NMPC.
 
 State x ∈ ℝ¹³ = [p(3), v(3), q(4), ω(3)]
 Control u ∈ ℝ⁴ = [T, ωx_cmd, ωy_cmd, ωz_cmd]
 
-Adaptive plant (model params injected at runtime from the MHE):
-  v̇ = -g·e₃ + (R·[0,0,T])/m̂ + d̂      (m̂ = estimated mass, d̂ = disturbance)
-  ω̇ = k̂_τ·(ω_cmd − ω)                  (k̂_τ = 1/τ̂_rc)
+Nominal plant:
+  v̇ = -g·e₃ + (R·[0,0,T])/m
+  ω̇ = (ω_cmd − ω)/τ_rc
 
-Cost: external, with runtime parameters for reference + weights + model params.
-  p = [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), m̂(1), d̂(3), k̂_τ(1)]  → 22 params
+Cost: external, with runtime parameters for references and weights.
+  p = [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), v_ref(3), Q_vel(3)] → 23 params
 
 Run once:  python3 generate_nmpc_ocp.py
 Output:    ../c_generated_code_nmpc/
@@ -23,7 +23,7 @@ from casadi import MX, vertcat, norm_2, if_else, atan2, Function, diag, sqrt, do
 from acados_template import AcadosOcp, AcadosOcpSolver, AcadosModel
 
 # ── Physical parameters ──────────────────────────────────────────────────────
-MASS   = 1.08
+MASS   = 1.05
 G      = 9.81
 TAU_RC = 0.03
 T_MAX  = 5.0 * G
@@ -35,7 +35,7 @@ NU = 4
 DT_CONTROL = 0.01   # [s] control LOOP period (100 Hz) — independent of node dt
 T_HORIZON  = 1.5    # [s] prediction horizon
 N_HORIZON  = 31     # Jetson-runnable; node dt = 1.5/31 ≈ 0.048 s
-N_PARAMS   = 28     # p_ref(3)+q_ref(4)+Q_pos(3)+Q_att(3)+R_u(4)+m̂(1)+d̂(3)+k̂_τ(1) + v_ref(3)+Q_vel(3)
+N_PARAMS   = 23     # p_ref(3)+q_ref(4)+Q_pos(3)+Q_att(3)+R_u(4)+v_ref(3)+Q_vel(3)
 
 
 def build_quadrotor_model():
@@ -55,28 +55,29 @@ def build_quadrotor_model():
     w_cmd  = MX.sym("w_cmd", 3)   # rate command [rad/s]
     u = vertcat(T, w_cmd)
 
-    # Runtime parameters: [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), m̂, d̂(3), k̂_τ]
+    # Runtime parameters: [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), v_ref(3), Q_vel(3)]
     p_sym = MX.sym("p_runtime", N_PARAMS)
-    m_hat = p_sym[17]        # estimated mass [kg]
-    d_hat = p_sym[18:21]     # estimated disturbance accel [m/s²]
-    k_tau = p_sym[21]        # estimated 1/τ_rc [1/s]
     model.p = p_sym
 
-    # Quaternion → rotation matrix
-    qw, qx, qy, qz = q[0], q[1], q[2], q[3]
+    # Quaternion → rotation matrix.
+    # Normalize FIRST, then build the skew: R = I + 2qw[v]× + 2[v]×² is only
+    # orthonormal for a unit quaternion. Inside the horizon the ERK integrator
+    # does not reproject q, so ‖q‖ drifts from 1; using raw qv here (with only
+    # qw normalized) yields a non-orthonormal R that biases the thrust direction.
+    qn = norm_2(q)
+    q_normed = q / qn
+    qw, qx, qy, qz = q_normed[0], q_normed[1], q_normed[2], q_normed[3]
     q_hat = MX.zeros(3, 3)
     q_hat[0,1] = -qz;  q_hat[0,2] =  qy
     q_hat[1,0] =  qz;  q_hat[1,2] = -qx
     q_hat[2,0] = -qy;  q_hat[2,1] =  qx
-    qn = norm_2(q)
-    q_normed = q / qn
-    Rot = MX.eye(3) + 2*q_hat@q_hat + 2*q_normed[0]*q_hat
+    Rot = MX.eye(3) + 2*q_hat@q_hat + 2*qw*q_hat
 
     e3 = MX([0, 0, 1])
 
-    # Dynamics (model params m̂, d̂, k̂_τ injected at runtime from the MHE)
+    # Nominal dynamics
     dp = v
-    dv = -e3 * G + (Rot @ vertcat(MX(0), MX(0), T)) / m_hat + d_hat
+    dv = -e3 * G + (Rot @ vertcat(MX(0), MX(0), T)) / MASS
     # Quaternion kinematics: q̇ = ½ q ⊗ [0, ω]
     omega_quat = vertcat(MX(0), w)
     w0, x0, y0, z0 = q[0], q[1], q[2], q[3]
@@ -87,8 +88,7 @@ def build_quadrotor_model():
         w0*y1 - x0*z1 + y0*w1 + z0*x1,
         w0*z1 + x0*y1 - y0*x1 + z0*w1,
     )
-    # Rate controller (k̂_τ = 1/τ̂_rc, linear in the parameter → well-conditioned)
-    dw = k_tau * (w_cmd - w)
+    dw = (w_cmd - w) / TAU_RC
 
     f_expl = vertcat(dp, dv, dq, dw)
 
@@ -118,15 +118,14 @@ def build_nmpc_ocp():
     ocp.solver_options.N_horizon = N_HORIZON
 
     # Runtime parameters (p_sym created in build_quadrotor_model; model.p already set):
-    # [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), m̂(1), d̂(3), k̂_τ(1)]
+    # [p_ref(3), q_ref(4), Q_pos(3), Q_att(3), R_u(4), v_ref(3), Q_vel(3)]
     p_ref  = p_sym[0:3]
     q_ref  = p_sym[3:7]
     Q_pos  = p_sym[7:10]
     Q_att  = p_sym[10:13]
     R_u    = p_sym[13:17]
-    m_hat  = p_sym[17]
-    v_ref  = p_sym[22:25]   # reference velocity (feedforward → kills tracking lag at speed)
-    Q_vel  = p_sym[25:28]
+    v_ref  = p_sym[17:20]
+    Q_vel  = p_sym[20:23]
 
     # ── Cost function ────────────────────────────────────────────────────────
     ocp.cost.cost_type   = "EXTERNAL"
@@ -149,7 +148,7 @@ def build_nmpc_ocp():
     # Log map. Epsilon INSIDE the sqrt → finite Jacobian at q_err = identity
     # (qv=0). With norm_2(qv)+1e-9 the derivative is 0/0 = NaN at qv=0 → NaN
     # Hessian → QP_FAILURE whenever the attitude error is ~zero (e.g. hovering
-    # level with a level reference). Same fix as the MHE quat_log.
+    # level with a level reference).
     q_err_w = if_else(q_err[0] < 0, -q_err, q_err)
     qv = q_err_w[1:]
     nqv = sqrt(dot(qv, qv) + 1e-12)   # safe norm: finite Jacobian at qv=0
@@ -157,11 +156,12 @@ def build_nmpc_ocp():
     log_q = 2.0 * qv * theta_q / nqv
 
     # ── Residual vectors ─────────────────────────────────────────────────────
-    # Control deviation: u_err = [T - T_hover, ωx, ωy, ωz]
-    # Center on the ESTIMATED hover thrust m̂·g so a wrong nominal mass does not
-    # bias the regularisation away from the true equilibrium thrust.
-    T_hover = m_hat * G
-    u_err = vertcat(model.u[0] - T_hover, model.u[1], model.u[2], model.u[3])
+    # Control regularization: u_err = [T, ωx, ωy, ωz].
+    # Thrust is in the cost with its own weight R_u[0], but FREE — the residual
+    # is the raw thrust T, NOT (T − m·g). No hardcoded hover anchor: the
+    # trajectory's thrust demand varies along the path, so anchoring to m·g would
+    # bias it. R_u[0] is a small regularization/smoothing weight only.
+    u_err = vertcat(model.u[0], model.u[1], model.u[2], model.u[3])
 
     # ── Weight matrices (diagonal) ────────────────────────────────────────────
     #   Q_p ∈ R^{3×3},  Q_a ∈ R^{3×3},  R ∈ R^{4×4}
@@ -172,8 +172,9 @@ def build_nmpc_ocp():
 
     # ── Quadratic cost: e^T W e ───────────────────────────────────────────────
     #
-    #   ℓ(x,u) = e_pos^T Q_p e_pos  +  log_q^T Q_a log_q  +  u_err^T R u_err
-    #   ℓ_e(x) = e_pos^T Q_p e_pos  +  log_q^T Q_a log_q
+    #   ℓ(x,u) = e_pos^T Q_p e_pos + e_vel^T Q_v e_vel + log_q^T Q_a log_q
+    #            + u_err^T R u_err            (thrust free, R_u[0]·T² reg)
+    #   ℓ_e(x) = e_pos^T Q_p e_pos + e_vel^T Q_v e_vel + log_q^T Q_a log_q
     #
     stage_cost    = (e_pos.T  @ Q_p @ e_pos
                    + e_vel.T  @ Q_v @ e_vel
@@ -187,13 +188,10 @@ def build_nmpc_ocp():
     ocp.model.cost_expr_ext_cost   = stage_cost
     ocp.model.cost_expr_ext_cost_e = terminal_cost
 
-    # Default parameter values (sane: identity quat ref, nominal model params).
-    # m̂ MUST default to a nonzero value (it divides T in the dynamics).
+    # Default parameter values (sane: identity quat ref and velocity weights).
     p_default = np.zeros(N_PARAMS)
     p_default[3]  = 1.0          # q_ref = identity quaternion [qw=1, ...]
-    p_default[17] = MASS         # m̂ default = nominal mass
-    p_default[21] = 1.0 / TAU_RC # k̂_τ default = 1/τ_rc nominal
-    p_default[25:28] = 10.0      # Q_vel default
+    p_default[20:23] = 10.0      # Q_vel default
     ocp.parameter_values = p_default
 
     # ── Constraints ──────────────────────────────────────────────────────────

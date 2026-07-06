@@ -37,7 +37,7 @@
 #define QUADROTOR_NMPC_NX     13
 #define QUADROTOR_NMPC_NZ     0
 #define QUADROTOR_NMPC_NU     4
-#define QUADROTOR_NMPC_NP     28
+#define QUADROTOR_NMPC_NP     23
 
 #ifdef __cplusplus
 extern "C" {

@@ -9,7 +9,7 @@
  * Thread-safe: state protected by mutex so the control loop (main thread)
  * can read while the ROS2 executor writes from callbacks.
  *
- * Reusable by NMPC, MPCC, DQ-MPCC — controller-agnostic.
+ * Controller-agnostic MuJoCo bridge for the nominal NMPC SiL executable.
  */
 
 #include "quadrotor_mpc/common/types.hpp"

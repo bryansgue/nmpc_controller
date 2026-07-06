@@ -26,7 +26,7 @@ using namespace quadrotor_mpc;
 
 // ── Quadrotor dynamics (13-state, rate-control) ────────────────────────────
 static State13 quadrotor_dynamics(const State13& x, const Control4& u) {
-    const double mass   = 1.08;
+    const double mass   = 1.05;   // match QuadParams.mass / generator MASS
     const double g      = 9.81;
     const double tau_rc = 0.03;
 
@@ -54,6 +54,7 @@ int main() {
     NmpcParams nmpc_params;
 
     const double dt      = nmpc_params.dt;
+    const double dt_node = nmpc_params.node_dt(NmpcController::N);
     const double t_traj  = 63.0;          // Lissajous duration [s] (liss.t_final)
     const int    N_steps = static_cast<int>(t_traj / dt) + 200;  // small budget overshoot
 
@@ -121,7 +122,7 @@ int main() {
         Quat4 q_ref_prev = x.segment<4>(6);  // hemisphere anchor
 
         for (int k = 0; k <= NmpcController::N; ++k) {
-            double t_k = std::min(t + k * dt, t_traj);
+            double t_k = std::min(t + k * dt_node, t_traj);
             Vec3  pr = liss.position(t_k);
             Vec3  vr = liss.velocity(t_k);
             Vec3  ar = liss.acceleration(t_k);
@@ -130,9 +131,9 @@ int main() {
             q_ref_prev = qr;
 
             if (k < NmpcController::N)
-                ctrl.set_reference(k, pr, qr);
+                ctrl.set_reference(k, pr, qr, vr);
             else
-                ctrl.set_reference_terminal(pr, qr);
+                ctrl.set_reference_terminal(pr, qr, vr);
 
             if (k == 0) { p_ref_0 = pr; q_ref_0 = qr; }
         }
